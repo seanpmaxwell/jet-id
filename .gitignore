@@ -141,3 +141,10 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+private-notes.md
+archive
+**/*.tmp.*
+
+lib
+workflows
