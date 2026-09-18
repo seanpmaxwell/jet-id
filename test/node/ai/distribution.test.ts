@@ -9,7 +9,7 @@ import jetId from '@src/index';
 const ALPHABET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
 const DASH = '-'.charCodeAt(0);
 const ID_LENGTH = 28;
-const DASH_INDICES = [6, 13, 21];
+const DASH_INDICES = [9, 15, 21];
 
 const SAMPLES = 2_000_000;
 
@@ -76,11 +76,11 @@ describe('character distribution', () => {
     expect(wrongLength).toBe(-1);
   });
 
-  it('never emits a dash outside indices 6, 13 and 21', () => {
+  it('never emits a dash outside indices 9, 15 and 21', () => {
     expect(misplacedDash).toBe(-1);
   });
 
-  it('always emits a dash at indices 6, 13 and 21', () => {
+  it('always emits a dash at indices 9, 15 and 21', () => {
     expect(missingDash).toBe(-1);
   });
 

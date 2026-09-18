@@ -36,9 +36,9 @@ describe('jetId() in the browser', () => {
     expect(id).toHaveLength(28);
   });
 
-  it('uses the 6-6-7-6 dash layout', () => {
+  it('uses the 9-5-5-6 dash layout', () => {
     const segments = jetId().split('-');
-    expect(segments.map((segment) => segment.length)).toEqual([6, 6, 7, 6]);
+    expect(segments.map((segment) => segment.length)).toEqual([9, 5, 5, 6]);
   });
 
   it('only uses Crockford base32 characters', () => {

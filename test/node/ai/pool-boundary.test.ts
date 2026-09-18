@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 //                                 CONSTANTS                                 //
 // ========================================================================= //
 
-// Mirrors `jetId.ts`. A chunk is one pool string, and one CSPRNG draw fills
+// Mirrors `generateId.ts`. A chunk is one pool string, and one CSPRNG draw fills
 // CHUNKS of them, so ids are handed out across two nested boundaries.
 const CHUNK_IDS = 256;
 const CHUNKS = 4;

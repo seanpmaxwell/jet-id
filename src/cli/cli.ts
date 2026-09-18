@@ -2,7 +2,8 @@ import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import jetId from '@src/api/jetId';
+import generateId from '@src/api/generateId';
+import generateTimedId from '@src/api/generateTimedId';
 
 import cmdLineParser, { ParsedCmdLineArgs } from './_internal/cmdLineParser';
 import printHelpText from './_internal/printHelpText';
@@ -18,10 +19,10 @@ const PACKAGE_NAME = 'jet-id';
 // ========================================================================= //
 
 /**
- * Run `jet-id` through the command-line.
+ * Run `jet-id` from the command line.
  */
 async function cli(args: string[]): Promise<unknown> {
-  // ---- parse the command-line-arguments
+  // ---- Parse the command-line arguments
   const pArgs = await cmdLineParser(args);
 
   // ---- `help/version`
@@ -47,8 +48,8 @@ async function cli(args: string[]): Promise<unknown> {
 // ========================================================================= //
 
 /**
- * Writes are batched. Past a few thousand ids a write syscall per line costs
- * far more than generating the id does.
+ * Writes are batched. Past a few thousand IDs, a write syscall per line costs
+ * far more than generating the ID does.
  *
  * Used by: {@link cli}
  *
@@ -57,8 +58,9 @@ async function cli(args: string[]): Promise<unknown> {
 function printIds(args: ParsedCmdLineArgs): void {
   const { count } = args;
   let batch = '';
+  const genIdFn = args.timed ? generateTimedId : generateId;
   for (let i = 0; i < count; i++) {
-    batch += jetId() + '\n';
+    batch += genIdFn() + '\n';
     if ((i & 1023) === 1023) {
       process.stdout.write(batch);
       batch = '';

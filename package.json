@@ -39,7 +39,7 @@
     "readme:restore": "mv README.md ./assets/README-npm.md && mv ./assets/README.tmp.md README.md",
     "prepublishOnly": "npm run build && tsc && npm run lint && npm run format:check && npm test && npm run readme:swap",
     "postpack": "npm run readme:restore",
-    "size": "npm run build && npm pack --dry-run --json --ignore-scripts",
+    "npm-data": "npm run build && npm pack --dry-run --json --ignore-scripts",
     "start": "node lib/cli.js",
     "start:build": "npm run build && npm run start --",
     "test": "vitest run",

@@ -9,8 +9,6 @@ import onInit from '@src/utils/onInit';
 
 import jetId from '../src';
 
-import IdFactory from './IdFactory/IdFactory';
-
 // ========================================================================= //
 //                                 CONSTANTS                                 //
 // ========================================================================= //
@@ -27,7 +25,6 @@ const ROUNDS = 7;
 // ========================================================================= //
 
 const nanoidCrockford = customAlphabet(CROCKFORD_ALPHABET, 25);
-const idFactory67 = IdFactory([6, 6, 7, 6], CROCKFORD_ALPHABET);
 
 let checksum = 0;
 
@@ -56,7 +53,7 @@ onInit.sync(() => {
       bits: 125,
     },
     {
-      name: 'Nano ID: Crockford, 6-6-7-6',
+      name: 'Nano ID: Crockford, 9-5-5-6',
       generate: nanoidFormatted,
       chars: 28,
       bits: 125,
@@ -72,12 +69,6 @@ onInit.sync(() => {
       generate: () => randomUUID(),
       chars: 36,
       bits: 122,
-    },
-    {
-      name: 'IdFactory, 6-6-7-6 format',
-      generate: idFactory67,
-      chars: 28,
-      bits: 125,
     },
   ].map((entry) => ({ ...entry, samples: [] as number[] }));
 
@@ -120,7 +111,7 @@ onInit.sync(() => {
     `after ${WARMUP_MS} ms warmup per generator.\n`,
   );
 
-  // ---- Print a markdown friendly table
+  // ---- Print a Markdown-friendly table
   logger.info(
     '| Generator | Characters | Random bits | Median ops/sec | ns/ID | Relative throughput |',
   );
@@ -156,13 +147,13 @@ onInit.sync(() => {
 function nanoidFormatted(): string {
   const id = nanoidCrockford();
   return (
-    id.slice(0, 6) +
+    id.slice(0, 9) +
     '-' +
-    id.slice(6, 12) +
+    id.slice(10, 15) +
     '-' +
-    id.slice(11, 18) +
+    id.slice(15, 20) +
     '-' +
-    id.slice(18)
+    id.slice(26)
   );
 }
 
@@ -188,7 +179,7 @@ function measure(generate: () => string, durationMs: number): number {
 }
 
 /**
- * Ge the median result
+ * Get the median result
  */
 function median(values: number[]): number {
   const sorted = [...values].sort((a, b) => a - b);
