@@ -50,6 +50,16 @@ import jetId from 'jet-id';
 jetId(); // '9Q8SWWBTY-7NVXM-FT9S6-XB4R3M'
 ```
 
+### Validation
+
+`jetId` contains a `.test` function if you need to validate an ID. Note that `.test` is not case-sensitive.
+
+```ts
+const someId = 'avz6yg1rb-47j6r-xgns9-tqw29a';
+
+console.log(jetId.test(someId)); // => true
+```
+
 ### Timestamped/Sortable IDs
 
 `jetId.timed(epoch?: number): string` encodes the current time in the first nine characters, so IDs created later sort after ones created earlier.
@@ -64,22 +74,15 @@ jetId.timed(); // '1KKNTQ2CN-606ZG-8VF48-76B6F3'
 const date = new Date(2015, 5, 3);
 const timedId = jetId.timed(date.getTime());
 logger.info(timedId); // "19PW3GCC0..."
+```
 
+If an id has been timestamped, you can extract the epoch with `jetId.parseTimed(id: string): number`. This will use the validation function above so parsing is not case-sensitive.
+
+```
 // Parse timed id
 const parsedId = jetId.parseTimed(timedId);
 const dateStr = new Date(parsedId).toLocaleString();
 logger.info(dateStr); // "6/3/2015 ..."
-
-```
-
-### Validation
-
-`jetId` contains a `.test` function if you need to validate an ID. Note that `.test` is not case-sensitive.
-
-```ts
-const someId = 'avz6yg1rb-47j6r-xgns9-tqw29a';
-
-console.log(jetId.test(someId)); // => true
 ```
 
 
@@ -107,6 +110,7 @@ Median of 7 samples, at least 500 ms each, after a 500 ms warmup per generator.
 | Nano ID: Crockford, 9-5-5-6 | 28 | 125 | 14,441,127 | 69.2 | 0.17x |
 | uuid v4() | 36 | 122 | 8,536,998 | 117.1 | 0.10x |
 | crypto.randomUUID() | 36 | 122 | 9,938,321 | 100.6 | 0.12x |
+
 
 ## License
 
