@@ -1,10 +1,10 @@
 {
   "name": "jet-id",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "publishConfig": {
     "access": "public"
   },
-  "description": "Generate timestamped and tagged Crockford alphabet unique ids",
+  "description": "An extremely fast unique ID generator for JavaScript and TypeScript, with optional sorting/timestamping.",
   "homepage": "https://github.com/seanpmaxwell/jet-id#readme",
   "bugs": {
     "url": "https://github.com/seanpmaxwell/jet-id/issues"
