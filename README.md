@@ -42,7 +42,7 @@ npm install jet-id
 
 ### Basic usage
 
-Same as the quick glance. Just call the default import, there are no options to pass:
+Just call the default import, there are no options to pass:
 
 ```ts
 import jetId from 'jet-id';
