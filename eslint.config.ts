@@ -5,14 +5,8 @@ import tseslint from 'typescript-eslint';
 
 export default [
   {
-    // Playground templates/tmp are formatting fixtures for code-divider itself
-    ignores: [
-      'lib/',
-      'node_modules/',
-      'playground/templates/',
-      'playground/tmp/',
-      '**/*.tmp.js',
-    ],
+    // Build output, dependencies, and throwaway `.tmp.js` scratch files.
+    ignores: ['lib/', 'node_modules/', '**/*.tmp.js'],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,

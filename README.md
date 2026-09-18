@@ -4,9 +4,9 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/seanpmaxwell/jet-id/ci.yml?style=flat-square&logo=github&logoColor=white&label=CI)](https://github.com/seanpmaxwell/jet-id/actions/workflows/ci.yml)
 [![types](https://img.shields.io/badge/types-included-3178c6?style=flat-square&logo=typescript&logoColor=white)](https://github.com/seanpmaxwell/jet-id/blob/main/src/index.ts)
 [![dependencies](https://img.shields.io/badge/dependencies-0-44cc11?style=flat-square)](https://github.com/seanpmaxwell/jet-id/blob/main/package.json)
-[![licence](https://img.shields.io/badge/licence-MIT-blue?style=flat-square)](./LICENSE)
+[![license](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](./LICENSE)
 
-An extremely fast unique ID generator for JavaScript and TypeScript.
+An extremely fast unique ID generator for JavaScript and TypeScript, with optional sorting/timestamping.
 
 
 ## Quick Glance
@@ -14,98 +14,99 @@ An extremely fast unique ID generator for JavaScript and TypeScript.
 ```ts
 import jetId from 'jet-id';
 
-jetId(); // '4963FM-56Q0MB-XAK5YWC-W7B696'
+jetId(); // '9Q8SWWBTY-7NVXM-FT9S6-XB4R3M'
 ```
 
+> Every ID is 25 random characters from the Crockford base32 alphabet, split into groups of 9-5-5-6.
 
-## Format
+## Why jet-id?
 
-```text
-4963FM-56Q0MB-XAK5YWC-W7B696             jet-id   28 chars, 125 random bits
-9b2e4c1a-7f3d-4e8b-a6c5-2d1f0e9b8a7c     UUID v4  36 chars, 122 random bits
-```
+- **Main features**
+  - **Optionally timestamped and readable:** Generated IDs are 28-character strings (25 Crockford characters plus 3 dashes). The first segment is 9 characters; if you want a timestamp, the first segment encodes the current epoch in Crockford form, so the ID length stays the same.
+  - **Fast:** Faster than `nanoid()`. [See benchmarks](#benchmarks).
 
-Every ID is 25 random characters from the Crockford base32 alphabet, split into
-groups of 6-6-7-6. Shorter than a UUID, with a bit more randomness, and no
-`I`, `L`, `O`, or `U` to confuse with `1` and `0`.
-
+- **Other perks**
+  - **Small:** Only **6.4 kB** packed.
+  - **Strong randomness:** 125 random bits. For perspective, UUID v4 has 122.
+  - **Zero runtime dependencies.**
+  - **Simple API:** Just `jetId()` and `jetId.test`/`jetId.timed`/`jetId.parseTimed`.
+  - **Universal:** Works in Node.js and modern browsers.
 
 ## Install
 
 ```sh
 npm install jet-id
-yarn add jet-id
 ```
 
-## Usage
+## API
 
-**Signature:** `jetId(): string`
+### Basic usage
 
-No arguments, no config, no setup.
+Same as the quick glance. Just call the default import, there are no options to pass:
 
 ```ts
 import jetId from 'jet-id';
 
-const requestId = jetId();
-
-const User = {
-  public_id: jetId(),
-  name: 'Bob',
-};
+jetId(); // '9Q8SWWBTY-7NVXM-FT9S6-XB4R3M'
 ```
 
-`jetId` contains a `.test` function if you need to validate an id. Note that `.test` is not case sensitive.
+### Timestamped/Sortable IDs
+
+`jetId.timed(epoch?: number): string` encodes the current time in the first nine characters, so IDs created later sort after ones created earlier.
+
+You can pass your own timestamp in milliseconds; otherwise it defaults to `Date.now()`:
 
 ```ts
-const someId = "4963fm-56q0mb-xak5ywc-w7b696"
+// Default, uses Date.now()
+jetId.timed(); // '1KKNTQ2CN-606ZG-8VF48-76B6F3'
 
-console.log(jetId.test(someId)) // => true
+// Custom timestamp
+const date = new Date(2015, 5, 3);
+const timedId = jetId.timed(date.getTime());
+logger.info(timedId); // "19PW3GCC0..."
+
+// Parse timed id
+const parsedId = jetId.parseTimed(timedId);
+const dateStr = new Date(parsedId).toLocaleString();
+logger.info(dateStr); // "6/3/2015 ..."
+
 ```
 
-### Command line
+### Validation
 
-You can also run it without installing anything:
+`jetId` contains a `.test` function if you need to validate an ID. Note that `.test` is not case-sensitive.
 
-```sh
-npx jet-id          # prints one ID
-npx jet-id -c 5     # prints five, one per line
+```ts
+const someId = 'avz6yg1rb-47j6r-xgns9-tqw29a';
+
+console.log(jetId.test(someId)); // => true
 ```
+
+
+## Command line
 
 | Flag | Short | What it does |
 |---|---|---|
 | `--count <n>` | `-c` | How many IDs to print. Defaults to `1`. |
+| `--timed` | `-t` | Encode the current epoch in the first 9 characters, so the IDs sort by creation time. |
 | `--help` | `-h` | Show usage. |
 | `--version` | `-v` | Show the installed version. |
-
-
-## Why jet-id?
-
-- **Fast:** Faster than `nanoid()` [See benchmarks](#benchmarks).
-- **Small:** Only **5.5kb** packed 
-- **Readable:** Crockford base32 leaves out look-alike characters, so IDs are easy for human eyes.
-- **Compact:** 28 characters instead of a UUID's 36.
-- **Strong randomness:** 125 random bits, compared with UUID v4's 122.
-- **Zero runtime dependencies:**
-- **Simple API:** Just `jetId()` and `jetId.test`. No options to figure out.
-- **Runs anywhere:** Works in Node.js and modern browsers.
 
 
 ## Benchmarks
 
 Node v24.13.0; V8 13.6.233.17-node.37; darwin/arm64; Apple M4 Pro
 
-Median of 7 samples, at least 500 ms each, after 500 ms warmup per generator.
+Median of 7 samples, at least 500 ms each, after a 500 ms warmup per generator.
 
 | Generator | Characters | Random bits | Median ops/sec | ns/ID | Relative throughput |
 |---|---:|---:|---:|---:|---:|
 | jetId() | 28 | 125 | 83,503,288 | 12.0 | 1.00x |
 | nanoid() | 21 | 126 | 52,415,897 | 19.1 | 0.63x |
 | Nano ID: Crockford, 25 chars | 25 | 125 | 47,073,761 | 21.2 | 0.56x |
-| Nano ID: Crockford, 6-6-7-6 | 28 | 125 | 14,441,127 | 69.2 | 0.17x |
+| Nano ID: Crockford, 9-5-5-6 | 28 | 125 | 14,441,127 | 69.2 | 0.17x |
 | uuid v4() | 36 | 122 | 8,536,998 | 117.1 | 0.10x |
 | crypto.randomUUID() | 36 | 122 | 9,938,321 | 100.6 | 0.12x |
-
-Higher operations/sec is better. Results depend on hardware and runtime.
 
 ## License
 

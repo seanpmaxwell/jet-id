@@ -23,8 +23,8 @@ jobs:
         # The rest are the live majors.
         node: ['20.19', '22', '24', '26']
         include:
-          # macOS has a case-insensitive filesystem, which the glob matcher
-          # handles differently, so cover it once on the newest Node.
+          # Cover a second OS and CPU architecture once, on the newest Node:
+          # macos-latest runs on Apple silicon (arm64), the Ubuntu jobs on x64.
           - os: macos-latest
             node: '26'
     steps:
@@ -43,8 +43,8 @@ jobs:
       - run: npm run lint
       - run: npm run format:check
       - run: npm run build
-      # Unit tests only: `npm test` also runs the browser suite, and browsers
-      # are installed in the dedicated `browser` job below, not here.
+      # Node tests only: `npm test` also runs the browser suite, which has its
+      # own job below.
       - run: npm run test:node
 
   browser:
