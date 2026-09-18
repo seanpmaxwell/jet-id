@@ -1,0 +1,21 @@
+{
+  "editor.minimap.enabled": false,
+  "editor.rulers": [80],
+  "editor.tabSize": 2,
+
+  "workbench.sideBar.location": "right",
+  "workbench.editor.empty.hint": "hidden",
+
+  // JSDoc noise reduction
+  "js/ts.suggest.jsdoc.enabled": false,
+  "js/ts.suggest.jsdoc.generateReturns": false,
+
+  "emeraldwalk.runonsave": {
+    "commands": [
+      {
+        "match": "\\.(css|js|jsx|ts|tsx)$",
+        "cmd": "npx code-divider"
+      }
+    ]
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "name": "jet-id",
+  "version": "1.0.3",
+  "publishConfig": {
+    "access": "public"
+  },
+  "description": "Generate timestamped and tagged Crockford alphabet unique ids",
+  "homepage": "https://github.com/seanpmaxwell/jet-id#readme",
+  "bugs": {
+    "url": "https://github.com/seanpmaxwell/jet-id/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/seanpmaxwell/jet-id.git"
+  },
+  "license": "MIT",
+  "author": "seanpmaxwell1",
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "default": "./lib/index.js"
+    }
+  },
+  "bin": {
+    "jet-id": "./lib/cli.js"
+  },
+  "scripts": {
+    "benchmarks": "npm run build && tsx playground/benchmark.ts",
+    "build": "tsx scripts/build.ts",
+    "install:clean": "rm -rf node_modules && rm -f package-lock.json && npm i",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "readme:swap": "mv README.md ./assets/README.tmp.md && mv ./assets/README-npm.md README.md",
+    "readme:restore": "mv README.md ./assets/README-npm.md && mv ./assets/README.tmp.md README.md",
+    "prepublishOnly": "npm run build && tsc && npm run lint && npm run format:check && npm test && npm run readme:swap",
+    "postpack": "npm run readme:restore",
+    "size": "npm run build && npm pack --dry-run --json --ignore-scripts",
+    "start": "node lib/cli.js",
+    "start:build": "npm run build && npm run start --",
+    "test": "vitest run",
+    "test:node": "vitest run test/node",
+    "test:browser": "vitest run --config vitest.browser.config.ts",
+    "typecheck": "tsc",
+    "dev:commit": "npm run format && git add -A && git commit -m \"dev commit\"",
+    "dev:commit:push": "npm run dev:commit && git push"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@trivago/prettier-plugin-sort-imports": "^6.0.2",
+    "@types/node": "^26.2.0",
+    "@vitest/browser": "^4.1.11",
+    "@vitest/browser-playwright": "^4.1.11",
+    "dts-bundle-generator": "^9.5.1",
+    "esbuild": "^0.28.2",
+    "eslint": "^10.7.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.7.0",
+    "jiti": "^2.7.0",
+    "nanoid": "^6.0.1",
+    "playwright": "^1.63.0",
+    "prettier": "^3.9.5",
+    "tsx": "^4.23.11",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.65.0",
+    "uuid": "^14.0.2",
+    "vitest": "^4.1.10"
+  },
+  "engines": {
+    "node": ">=20.19"
+  },
+  "sideEffects": false,
+  "files": [
+    "lib",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "id",
+    "id-generator",
+    "unique-id",
+    "uuid",
+    "uuid-alternative",
+    "ulid",
+    "ksuid",
+    "typeid",
+    "crockford",
+    "crockford-base32",
+    "base32",
+    "sortable-id",
+    "sortable",
+    "timestamp",
+    "typed-id",
+    "tagged-id",
+    "collision-resistant",
+    "primary-key",
+    "database-id",
+    "identifier",
+    "typescript",
+    "csprng",
+    "random-id"
+  ]
+}
