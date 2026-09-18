@@ -25,7 +25,7 @@
     }
   },
   "bin": {
-    "jet-id": "./lib/cli.js"
+    "jet-id": "lib/cli.js"
   },
   "scripts": {
     "benchmarks": "npm run build && tsx playground/benchmark.ts",
