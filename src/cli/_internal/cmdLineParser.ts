@@ -11,6 +11,7 @@ const PARSE_ARG_OPTIONS = {
   version: { type: 'boolean', short: 'v' },
   count: { type: 'string', short: 'c' },
   timed: { type: 'boolean', short: 't' },
+  key: { type: 'boolean', short: 'k' },
 } as const;
 
 // ========================================================================= //
@@ -23,6 +24,7 @@ export interface ParsedCmdLineArgs {
   version: boolean;
   count: number;
   timed: boolean;
+  key: boolean;
 }
 
 // ========================================================================= //
@@ -63,6 +65,7 @@ function cmdLineParser(args: string[]): ParsedCmdLineArgs {
     version: !!pArgs.version,
     count,
     timed: !!pArgs.timed,
+    key: !!pArgs.key,
   };
 }
 

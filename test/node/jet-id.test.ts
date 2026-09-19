@@ -9,10 +9,8 @@ import jetId from '@src/index';
 const DASH_INDICES = [9, 15, 21];
 const ID_LENGTH = 28;
 const VALID = '0123456AB-CDEFG-HJKMN-PQRSTV';
-
-// Nine Crockford characters hold 45 bits, so this is the first epoch that
-// no longer fits.
 const TIMESTAMP_LIMIT = 32 ** 9;
+const KEY_LENGTH = 52;
 
 const NON_STRING_VALUES: unknown[] = [
   undefined,
@@ -181,5 +179,32 @@ describe('jetId.parseTimed', () => {
     for (const value of NON_STRING_VALUES) {
       expect(() => jetId.parseTimed(value as string)).toThrow(TypeError);
     }
+  });
+});
+
+// ---- `.key`
+describe('jetId.key', () => {
+  it('returns a string of 52 characters', () => {
+    const key = jetId.key();
+    expect(typeof key).toBe('string');
+    expect(key).toHaveLength(KEY_LENGTH);
+  });
+
+  it('only uses Crockford base32 characters, with no dashes', () => {
+    for (let i = 0; i < 1_000; i++) {
+      expect(jetId.key()).toMatch(/^[0-9A-HJKMNP-TV-Z]{52}$/);
+    }
+  });
+
+  it('is not a valid jet-id', () => {
+    expect(jetId.test(jetId.key())).toBe(false);
+  });
+
+  it('generates unique keys across multiple pool refills', () => {
+    const keys = new Set<string>();
+    for (let i = 0; i < 10_000; i++) {
+      keys.add(jetId.key());
+    }
+    expect(keys.size).toBe(10_000);
   });
 });

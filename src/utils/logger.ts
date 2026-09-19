@@ -25,6 +25,14 @@ function error(...args: unknown[]): string {
   return args.join(' ');
 }
 
+/**
+ * Print error
+ */
+function warn(...args: unknown[]): string {
+  callConsoleFn(args, 'warn');
+  return args.join(' ');
+}
+
 // ============================= Shared Helpers ============================ //
 
 /**
@@ -48,4 +56,5 @@ function callConsoleFn(
 export default {
   info,
   error,
+  warn,
 } as const;
