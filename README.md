@@ -85,6 +85,16 @@ const dateStr = new Date(parsedId).toLocaleString();
 logger.info(dateStr); // "6/3/2015 ..."
 ```
 
+### Key
+
+The `.key` function prints a 52-character Crockford string which is suitable for using as a private-key for security encryption. Note that unique-IDs are about collision resistance not security necessarily. 
+
+Why 52 characters? Because 256 bits of entropy is considered the gold-standard for making an encryption-key forever safe against brute-force attacks. 52 is how many characters are need to provide 256 bits of entropy using the Crockford alphabet.
+
+```ts
+  jetId.key() // 'YS7T70GGWC7Z1EX765FZ22M9FNDFA2VDF6KEET5P4P7YEBETBGVN'
+```
+
 
 ## Command line
 
@@ -92,6 +102,7 @@ logger.info(dateStr); // "6/3/2015 ..."
 |---|---|---|
 | `--count <n>` | `-c` | How many IDs to print. Defaults to `1`. |
 | `--timed` | `-t` | Encode the current epoch in the first 9 characters, so the IDs sort by creation time. |
+| `--key` | `-k` | Print a 52 character non-segmented Crockford string |
 | `--help` | `-h` | Show usage. |
 | `--version` | `-v` | Show the installed version. |
 

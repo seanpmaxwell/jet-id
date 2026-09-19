@@ -14,6 +14,7 @@ describe('cmdLineParser', () => {
       version: false,
       count: 1,
       timed: false,
+      key: false,
     });
   });
 
@@ -28,6 +29,7 @@ describe('cmdLineParser', () => {
         ['-c', '5'],
       ],
       [['--timed'], ['-t']],
+      [['--key'], ['-k']],
     ];
     for (const [long, short] of pairs) {
       expect(cmdLineParser(short), short.join(' ')).toEqual(
@@ -45,6 +47,11 @@ describe('cmdLineParser', () => {
   it('parses --timed', () => {
     expect(cmdLineParser(['--timed']).timed).toBe(true);
     expect(cmdLineParser(['-t']).timed).toBe(true);
+  });
+
+  it('parses --key', () => {
+    expect(cmdLineParser(['--key']).key).toBe(true);
+    expect(cmdLineParser(['-k']).key).toBe(true);
   });
 
   it('combines --timed and --count in any order', () => {
