@@ -3,7 +3,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 import generateId from '@src/api/generateId';
+import generateKey from '@src/api/generateKey';
 import generateTimedId from '@src/api/generateTimedId';
+import logger from '@src/utils/logger';
 
 import cmdLineParser, { ParsedCmdLineArgs } from './_internal/cmdLineParser';
 import printHelpText from './_internal/printHelpText';
@@ -58,7 +60,21 @@ async function cli(args: string[]): Promise<unknown> {
 function printIds(args: ParsedCmdLineArgs): void {
   const { count } = args;
   let batch = '';
-  const genIdFn = args.timed ? generateTimedId : generateId;
+  if (args.timed && args.key) {
+    logger.warn(
+      'WARNING: The --key and --timed options cannot be used together, defaulting to key',
+    );
+  }
+  // Set the function to use
+  let genIdFn;
+  if (args.key) {
+    genIdFn = generateKey;
+  } else if (args.timed) {
+    genIdFn = generateTimedId;
+  } else {
+    genIdFn = generateId;
+  }
+  // Call it by the count number
   for (let i = 0; i < count; i++) {
     batch += genIdFn() + '\n';
     if ((i & 1023) === 1023) {
@@ -66,6 +82,7 @@ function printIds(args: ParsedCmdLineArgs): void {
       batch = '';
     }
   }
+  // Print items.
   if (batch !== '') {
     process.stdout.write(batch);
   }

@@ -30,4 +30,12 @@ onInit.sync(() => {
     const dateStr = new Date(parsedId).toLocaleString();
     logger.info(dateStr);
   }
+
+  // ---- Test key
+  {
+    for (let i = 0; i < 1000; i++) {
+      //
+      logger.info(jetId.key());
+    }
+  }
 }, 'playground_basic');
