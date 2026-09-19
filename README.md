@@ -22,7 +22,7 @@ jetId(); // '9Q8SWWBTY-7NVXM-FT9S6-XB4R3M'
 ## Why jet-id?
 
 - **Main features**
-  - **Optionally timestamped and readable:** Generated IDs are 28-character strings (25 Crockford characters plus 3 dashes). The first segment is 9 characters; if you want a timestamp, the first segment encodes the current epoch in Crockford form, so the ID length stays the same.
+  - **Optionally timestamped and readable:** Generated IDs are 28-character strings (25 Crockford characters plus 3 dashes). The first segment is 9 characters; if you want a timestamp, the first segment encodes the current epoch in Crockford form, so the ID length stays the same. There is also a built-in function for parsing timestamped ids and returning the epoch. 
   - **Fast:** Faster than `nanoid()`. [See benchmarks](#benchmarks).
 
 - **Other perks**
