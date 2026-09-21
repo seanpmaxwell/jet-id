@@ -8,7 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import logger from '@src/utils/logger';
 import onInit from '@src/utils/onInit';
 
-import jetId, { jetIdMono } from '../src';
+import jetId from '../src';
 
 // ========================================================================= //
 //                                 CONSTANTS                                 //
@@ -36,7 +36,7 @@ let checksum = 0;
 onInit.sync(() => {
   logger.info('\n Running benchmarks... \n');
 
-  // =============================== Setup ================================= //
+  // ================================ Setup ================================ //
 
   const cases = [
     {
@@ -70,8 +70,8 @@ onInit.sync(() => {
       bits: 125,
     },
     {
-      name: 'jetIdMono',
-      generate: () => jetIdMono(),
+      name: 'jetId.mono()',
+      generate: () => jetId.mono(),
       chars: 44,
       bits: 125,
     },
@@ -88,7 +88,7 @@ onInit.sync(() => {
       bits: 80,
     },
     {
-      name: 'uuid v4()',
+      name: 'uuidv4()',
       generate: () => uuidv4(),
       chars: 36,
       bits: 122,
@@ -101,7 +101,7 @@ onInit.sync(() => {
     },
   ].map((entry) => ({ ...entry, samples: [] as number[] }));
 
-  // ============================= Run Tests =============================== //
+  // ============================== Run Tests ============================== //
 
   // Warm up every generator before collecting measurements.
   for (const entry of cases) {
@@ -113,7 +113,7 @@ onInit.sync(() => {
     for (let position = 0; position < cases.length; position++) {
       const entry = cases[(round + position) % cases.length];
       entry.samples.push(measure(entry.generate, SAMPLE_MS));
-      // logger.info('Round', round, 'completed ~', entry.name);
+      logger.info('Round', round, 'completed ~', entry.name);
     }
   }
 
@@ -122,12 +122,18 @@ onInit.sync(() => {
     ops: median(entry.samples),
   }));
 
+  // Read the baseline before sorting: relative throughput is quoted against
+  // jetId(), which is the first case, not against whatever turns out fastest.
   const baseline = results[0].ops;
+
+  // Fastest first, so the table reads in the same order as the README's.
+  results.sort((a, b) => b.ops - a.ops);
+
   const integer = new Intl.NumberFormat('en-US', {
     maximumFractionDigits: 0,
   });
 
-  // =========================== Print Results ============================= //
+  // ============================ Print Results ============================ //
 
   // ---- Specs
   logger.info('# ID generation benchmark\n');
