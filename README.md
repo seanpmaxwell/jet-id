@@ -107,7 +107,15 @@ jetId.test(null); // false
 
 **Signature:** `jetId.timed(epoch?: number): string`
 
-Encodes a timestamp in the first nine characters without changing the ID's overall length. IDs with later timestamps sort after IDs with earlier timestamps. Pass a timestamp in milliseconds, or omit it to use `Date.now()`.
+Encodes a timestamp in the first nine characters, so IDs sort by creation time under plain string comparison. Pass a timestamp in milliseconds, or omit it to use `Date.now()`.
+
+It exists alongside `jetIdBig()` for three reasons:
+
+- **You choose the timestamp.** `jetIdBig()` always reads its own clock, so it cannot produce an ID for a record created last year. `jetId.timed(epoch)` can, which is what backfills, data imports, and deterministic tests need.
+- **Same layout as a plain ID.** A timed ID is still 28 characters in the same 9-5-5-6 shape, so plain and timestamped IDs share a column and a validator. `jetIdBig()` is a separate 44-character format.
+- **Wall-clock time.** It uses `Date.now()`, which follows system clock corrections, so the value means "when this was created." `jetIdBig()` uses `performance.now()`, which deliberately does not, because its job is ordering rather than timekeeping.
+
+The trade is entropy: the nine timestamp characters leave 80 random bits instead of 125.
 
 ```ts
 // Use the current time.
