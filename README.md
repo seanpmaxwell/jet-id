@@ -73,13 +73,13 @@ A plain ID contains 25 random Crockford base32 characters, grouped as `9-5-5-6`.
 
 > `jetId()` and `jetId.timed()` share the same 28-character format. Use `jetId.test()` to validate either, and `jetId.timed.parse()` to extract the timestamp from a timestamped ID.
 
-> `jetId.mono()` and `jetKey()` use different formats and are available as named exports.
+> `jetId.mono()` and `jetKey()` use different formats. Access `jetId.mono()` through the default `jetId` export; `jetKey` is a named export.
 
 <p align="center">· · ·</p>
 
 ## jetId
 
-The default export generates random IDs and provides helpers for validation and timestamping.
+The default export generates random IDs and provides helpers for validation, timestamping, and monotonic IDs.
 
 #### `jetId()`
 
@@ -156,7 +156,7 @@ Generates timestamped, monotonic IDs: each ID sorts strictly after the previous 
 Generates the next ID.
 
 ```ts
-import { jetId.mono } from 'jet-id';
+import jetId from 'jet-id';
 
 jetId.mono(); // '1M308A0DM-PR0000-422PKHWX-THHP6B3G-DPQCJ4GCE'
 jetId.mono(); // '1M308A0DM-WR0000-1ZS1A6M5-NE6RKRHN-X9F480HCB'

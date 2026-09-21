@@ -21,7 +21,7 @@ const REPO_ROOT = path.resolve(__dirname, '../../..');
 const ENTRY_SOURCE = `
 import v8 from 'node:v8';
 
-import jetId, { jetIdMono, jetKey } from '@src/index';
+import jetId, { jetKey } from '@src/index';
 
 const beforeSnapshot = [jetId(), jetId(), jetId.mono(), jetKey()];
 

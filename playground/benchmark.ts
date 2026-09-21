@@ -70,7 +70,7 @@ onInit.sync(() => {
       bits: 125,
     },
     {
-      name: 'jetId.mono',
+      name: 'jetId.mono()',
       generate: () => jetId.mono(),
       chars: 44,
       bits: 125,
@@ -88,7 +88,7 @@ onInit.sync(() => {
       bits: 80,
     },
     {
-      name: 'uuid v4()',
+      name: 'uuidv4()',
       generate: () => uuidv4(),
       chars: 36,
       bits: 122,
@@ -113,7 +113,7 @@ onInit.sync(() => {
     for (let position = 0; position < cases.length; position++) {
       const entry = cases[(round + position) % cases.length];
       entry.samples.push(measure(entry.generate, SAMPLE_MS));
-      // logger.info('Round', round, 'completed ~', entry.name);
+      logger.info('Round', round, 'completed ~', entry.name);
     }
   }
 
