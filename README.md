@@ -38,15 +38,15 @@ A plain ID contains 25 random Crockford base32 characters, grouped as `9-5-5-6`.
   - [`jetIdBig()`](#jetidbig-1)
   - [`jetIdBig.test()`](#jetidbigtest)
   - [`jetIdBig.parse()`](#jetidbigparse)
-  - [Notes](#notes)
 - [jetKey](#jetkey)
   - [`jetKey()`](#jetkey-1)
-  - [Notes](#notes-1)
 - [Command line](#command-line)
   - [Options](#options)
   - [Generator types](#generator-types)
 - [Benchmarks](#benchmarks)
 - [License](#license)
+
+<p align="center">· · ·</p>
 
 <!-- tocstop -->
 
