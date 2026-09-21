@@ -81,7 +81,7 @@ A plain ID contains 25 random Crockford base32 characters, grouped as `9-5-5-6`.
 
 The default export generates random IDs and provides helpers for validation and timestamping.
 
-### `jetId()`
+#### `jetId()`
 
 Generates a random 28-character ID. No options are required.
 
@@ -91,7 +91,7 @@ import jetId from 'jet-id';
 jetId(); // '9Q8SWWBTY-7NVXM-FT9S6-XB4R3M'
 ```
 
-### `jetId.test()`
+#### `jetId.test()`
 
 Checks whether a value is a well-formed ID string. Accepts any value and returns `false` if the format is invalid. Validation is case-insensitive.
 
@@ -103,7 +103,7 @@ jetId.test('not-an-id'); // false
 jetId.test(null); // false
 ```
 
-### `jetId.timed()`
+#### `jetId.timed()`
 
 **Signature:** `jetId.timed(epoch?: number): string`
 
@@ -120,7 +120,7 @@ const timedId = jetId.timed(date.getTime());
 
 > IDs with the same timestamp are not strictly ordered. Use `jetIdBig()` when you also need ordering within a single millisecond.
 
-### `jetId.timed.parse()`
+#### `jetId.timed.parse()`
 
 **Signature:** `jetId.timed.parse(id: unknown): number`
 
@@ -142,7 +142,7 @@ new Date(jetId.timed.parse(timedId)).toISOString();
 
 Generates timestamped, monotonic IDs: each ID sorts strictly after the previous one, including within a single millisecond. IDs are 44 characters long, with 40 Crockford base32 characters grouped as `9-6-8-8-9`.
 
-### `jetIdBig()`
+#### `jetIdBig()`
 
 Generates the next ID.
 
@@ -154,7 +154,7 @@ jetIdBig(); // '1M308A0DM-WR0000-1ZS1A6M5-NE6RKRHN-X9F480HCB'
 jetIdBig(); // '1M308A0DM-X50000-XJ1ZENAH-MVX225N0-MZ0BTD8YB'
 ```
 
-### `jetIdBig.test()`
+#### `jetIdBig.test()`
 
 Checks whether a value is a well-formed `jetIdBig` string. Like `jetId.test()`, it accepts any value and ignores case.
 
@@ -165,7 +165,7 @@ jetIdBig.test(someId); // true
 jetIdBig.test('not-an-id'); // false
 ```
 
-### `jetIdBig.parse()`
+#### `jetIdBig.parse()`
 
 **Signature:** `jetIdBig.parse(id: unknown): { epoch: number; fraction: number; counter: number }`
 
@@ -221,7 +221,7 @@ Time comes from `performance.timeOrigin + performance.now()` instead of `Date.no
 
 Generates a 52-character Crockford base32 string with no dashes, suitable for secrets such as API keys or symmetric encryption keys. All 52 characters come from the platform's cryptographically secure random source.
 
-### `jetKey()`
+#### `jetKey()`
 
 Returns a new key.
 
@@ -232,8 +232,6 @@ jetKey(); // 'YFC75GX2KY5W183FRZA4XDVZ6PYDJPQT7JMNH3N7ZXPQ8FCW3M4G'
 ```
 
 > Unique IDs are designed for collision resistance, not necessarily secrecy. Use `jetKey()` when generating a secret.
-
-### Notes
 
 <details>
 <summary>Why 52 characters?</summary>
