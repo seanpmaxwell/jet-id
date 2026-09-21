@@ -13,13 +13,13 @@ export const ID_LENGTH = 28;
 export const DASH_INDICES = [9, 15, 21];
 export const VALID_DUMMY_ID = '0123456AB-CDEFG-HJKMN-PQRSTV';
 
-// ---- `jetIdBig`, the 9-6-8-8-9 format
-export const BIG_ID_LENGTH = 44;
-export const BIG_DASH_INDICES = [9, 16, 25, 34];
-export const VALID_DUMMY_BIG_ID =
+// ---- `jetIdMono`, the 9-6-8-8-9 format
+export const MONO_ID_LENGTH = 44;
+export const MONO_DASH_INDICES = [9, 16, 25, 34];
+export const VALID_DUMMY_MONO_ID =
   '0123456AB-CDEFGH-JKMNPQRS-TVWXYZ01-23456789A';
 
-export const BIG_ID_PATTERN = new RegExp(
+export const MONO_ID_PATTERN = new RegExp(
   `^[${ALPHABET}]{9}-[${ALPHABET}]{6}-[${ALPHABET}]{8}-` +
     `[${ALPHABET}]{8}-[${ALPHABET}]{9}$`,
 );

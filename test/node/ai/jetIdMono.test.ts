@@ -9,15 +9,15 @@ import {
   vi,
 } from 'vitest';
 
-import { resetGeneratorState } from '@src/api/helpers/jetIdBig/generateMonotonicBigId';
-import { jetIdBig } from '@src/index';
+import { resetGeneratorState } from '@src/api/helpers/jetIdMono/generateMonoId';
+import { jetIdMono } from '@src/index';
 
 import {
-  BIG_DASH_INDICES,
-  BIG_ID_LENGTH,
-  BIG_ID_PATTERN,
+  MONO_DASH_INDICES,
+  MONO_ID_LENGTH,
+  MONO_ID_PATTERN,
   TIMESTAMP_LIMIT,
-  VALID_DUMMY_BIG_ID,
+  VALID_DUMMY_MONO_ID,
 } from '@test/_common/constants';
 import { decodeBase32, swap } from '@test/_common/utils';
 
@@ -34,8 +34,8 @@ const COUNTER_LIMIT = 2 ** 20; // 1048576
 // ========================================================================= //
 
 function readId(id: string) {
-  expect(id).toHaveLength(BIG_ID_LENGTH);
-  expect(id).toMatch(BIG_ID_PATTERN);
+  expect(id).toHaveLength(MONO_ID_LENGTH);
+  expect(id).toMatch(MONO_ID_PATTERN);
   return {
     epoch: decodeBase32(id.slice(0, 9)),
     fraction: decodeBase32(id.slice(10, 12)),
@@ -47,7 +47,7 @@ function readId(id: string) {
 //                                   TESTS                                   //
 // ========================================================================= //
 
-describe('jetIdBig', () => {
+describe('jetIdMono', () => {
   for (const decoder of ['buffer', 'textdecoder'] as const) {
     describe(`${decoder} decoder`, () => {
       let generateMonotonicId: () => string;
@@ -64,7 +64,7 @@ describe('jetIdBig', () => {
         vi.stubGlobal('Buffer', decoder === 'buffer' ? NodeBuffer : undefined);
         try {
           const module =
-            await import('@src/api/helpers/jetIdBig/generateMonotonicBigId');
+            await import('@src/api/helpers/jetIdMono/generateMonoId');
           generateMonotonicId = module.default;
           resetGeneratorState = module.resetGeneratorState;
         } finally {
@@ -98,9 +98,9 @@ describe('jetIdBig', () => {
       });
 
       it('returns a valid id in the 9-6-8-8-9 layout', () => {
-        const id = jetIdBig();
+        const id = jetIdMono();
         expect(typeof id).toBe('string');
-        expect(id).toHaveLength(BIG_ID_LENGTH);
+        expect(id).toHaveLength(MONO_ID_LENGTH);
         const segments = id.split('-');
         const lengths = segments.map((segment) => segment.length);
         expect(lengths).toEqual([9, 6, 8, 8, 9]);
@@ -292,13 +292,13 @@ describe('jetIdBig', () => {
   }
 });
 
-// ---- `jetIdBig.parse`
-describe('ai -> jetIdBig.parse', () => {
+// ---- `jetIdMono.parse`
+describe('ai -> jetIdMono.parse', () => {
   beforeEach(resetGeneratorState);
 
   it('agrees with the current clock', () => {
-    const id = jetIdBig();
-    const { epoch } = jetIdBig.parse(id);
+    const id = jetIdMono();
+    const { epoch } = jetIdMono.parse(id);
     const drift = Math.abs(epoch - Date.now());
     expect(drift).toBeLessThan(1_000);
   });
@@ -308,13 +308,13 @@ describe('ai -> jetIdBig.parse', () => {
     // past the ~1us bucket width, and then no two ids ever share a bucket.
     const ids: string[] = [];
     for (let i = 0; i < 5_000; i++) {
-      ids.push(jetIdBig());
+      ids.push(jetIdMono());
     }
 
     let shared = 0;
-    let previous = jetIdBig.parse(ids[0]);
+    let previous = jetIdMono.parse(ids[0]);
     for (let i = 1; i < ids.length; i++) {
-      const current = jetIdBig.parse(ids[i]);
+      const current = jetIdMono.parse(ids[i]);
       if (
         current.epoch === previous.epoch &&
         current.fraction === previous.fraction
@@ -338,8 +338,8 @@ describe('ai -> jetIdBig.parse', () => {
         stamp = '0123456789ABCDEFGHJKMNPQRSTVWXYZ'[remaining % 32] + stamp;
         remaining = Math.floor(remaining / 32);
       }
-      const id = stamp + VALID_DUMMY_BIG_ID.slice(9);
-      const parsed = jetIdBig.parse(id);
+      const id = stamp + VALID_DUMMY_MONO_ID.slice(9);
+      const parsed = jetIdMono.parse(id);
       expect(parsed.epoch, `epoch ${epoch}`).toBe(epoch);
     }
   });
@@ -347,35 +347,35 @@ describe('ai -> jetIdBig.parse', () => {
   it('reads the epoch from segment one alone', () => {
     // Built by hand rather than from two generated ids, which could land
     // either side of a millisecond boundary and make this flaky.
-    const { epoch } = jetIdBig.parse(VALID_DUMMY_BIG_ID);
-    for (let i = 10; i < BIG_ID_LENGTH; i++) {
-      if (BIG_DASH_INDICES.includes(i)) {
+    const { epoch } = jetIdMono.parse(VALID_DUMMY_MONO_ID);
+    for (let i = 10; i < MONO_ID_LENGTH; i++) {
+      if (MONO_DASH_INDICES.includes(i)) {
         continue;
       }
       const altered = swap(
-        VALID_DUMMY_BIG_ID,
+        VALID_DUMMY_MONO_ID,
         i,
-        VALID_DUMMY_BIG_ID[i] === 'Z' ? 'Y' : 'Z',
+        VALID_DUMMY_MONO_ID[i] === 'Z' ? 'Y' : 'Z',
       );
-      const parsed = jetIdBig.parse(altered);
-      expect(altered).not.toBe(VALID_DUMMY_BIG_ID);
+      const parsed = jetIdMono.parse(altered);
+      expect(altered).not.toBe(VALID_DUMMY_MONO_ID);
       expect(parsed.epoch, `index ${i}`).toBe(epoch);
     }
   });
 
   it('reads the sequence from segment two alone', () => {
-    const { fraction, counter } = jetIdBig.parse(VALID_DUMMY_BIG_ID);
+    const { fraction, counter } = jetIdMono.parse(VALID_DUMMY_MONO_ID);
     // Changing a random character must not disturb either field.
-    for (let i = 17; i < BIG_ID_LENGTH; i++) {
-      if (BIG_DASH_INDICES.includes(i)) {
+    for (let i = 17; i < MONO_ID_LENGTH; i++) {
+      if (MONO_DASH_INDICES.includes(i)) {
         continue;
       }
       const altered = swap(
-        VALID_DUMMY_BIG_ID,
+        VALID_DUMMY_MONO_ID,
         i,
-        VALID_DUMMY_BIG_ID[i] === 'Z' ? 'Y' : 'Z',
+        VALID_DUMMY_MONO_ID[i] === 'Z' ? 'Y' : 'Z',
       );
-      const parsed = jetIdBig.parse(altered);
+      const parsed = jetIdMono.parse(altered);
       expect(parsed, `index ${i}`).toMatchObject({ fraction, counter });
     }
   });

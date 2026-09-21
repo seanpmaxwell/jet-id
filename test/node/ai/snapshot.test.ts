@@ -21,15 +21,15 @@ const REPO_ROOT = path.resolve(__dirname, '../../..');
 const ENTRY_SOURCE = `
 import v8 from 'node:v8';
 
-import jetId, { jetIdBig, jetKey } from '@src/index';
+import jetId, { jetIdMono, jetKey } from '@src/index';
 
-const beforeSnapshot = [jetId(), jetId(), jetIdBig(), jetKey()];
+const beforeSnapshot = [jetId(), jetId(), jetIdMono(), jetKey()];
 
 v8.startupSnapshot.setDeserializeMainFunction(() => {
   console.log(
     JSON.stringify({
       beforeSnapshot,
-      afterRestore: [jetId(), jetId(), jetIdBig(), jetKey()],
+      afterRestore: [jetId(), jetId(), jetIdMono(), jetKey()],
     }),
   );
 });

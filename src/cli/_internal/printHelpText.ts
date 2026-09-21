@@ -14,7 +14,7 @@ const HELP_TEXT = `
     -c, --count <n>     How many ids to print (default: 1).
     -t, --type <type>   Which kind of id to print. One of:
                           timed   28 characters, sorts by creation time
-                          big     44 characters, also ordered within a
+                          mono    44 characters, also ordered within a
                                   single millisecond
                           key     52 characters, no dashes, for secrets
                         If omitted, a plain random 28-character id is used.
@@ -24,7 +24,7 @@ const HELP_TEXT = `
     jet-id                    One random id
     jet-id -c 10              Ten random ids, one per line
     jet-id -t timed           One timestamped id
-    jet-id -t big -c 10       Ten ids in strictly increasing order
+    jet-id -t mono -c 10      Ten ids in strictly increasing order
     jet-id --type=key         One 52-character key`;
 
 // ========================================================================= //

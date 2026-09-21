@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import jetId, { jetIdBig } from '@src/index';
+import jetId, { jetIdMono } from '@src/index';
 
 // ========================================================================= //
 //                                   TESTS                                   //
@@ -56,9 +56,9 @@ describe('jetId() in the browser', () => {
   });
 });
 
-// ---- `jetIdBig`
-describe('jetIdBig() in the browser', () => {
-  // `jetIdBig` keeps its own pool with its own decode branch, and is the only
+// ---- `jetIdMono`
+describe('jetIdMono() in the browser', () => {
+  // `jetIdMono` keeps its own pool with its own decode branch, and is the only
   // part of the API that needs `performance.timeOrigin`. Both of those are
   // what differ between Node and a browser, so they are checked here for real
   // rather than by stubbing `Buffer` away in a Node test.
@@ -68,7 +68,7 @@ describe('jetIdBig() in the browser', () => {
   });
 
   it('returns a valid id in the 9-6-8-8-9 layout', () => {
-    const id = jetIdBig();
+    const id = jetIdMono();
     expect(id).toHaveLength(44);
     expect(id.split('-').map((segment) => segment.length)).toEqual([
       9, 6, 8, 8, 9,
@@ -79,7 +79,7 @@ describe('jetIdBig() in the browser', () => {
   it('returns ids that sort in generation order across pool refills', () => {
     const ids: string[] = [];
     for (let i = 0; i < 10_000; i++) {
-      ids.push(jetIdBig());
+      ids.push(jetIdMono());
     }
     expect([...ids].sort()).toEqual(ids);
     expect(new Set(ids).size).toBe(10_000);
