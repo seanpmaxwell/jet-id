@@ -39,9 +39,9 @@ A plain ID contains 25 random Crockford base32 characters, grouped as `9-5-5-6`.
 | `jetIdBig()` | Strictly ordered IDs within one process | 44 |
 | `jetKey()` | Random secrets | 52 |
 
-`jetId()` and `jetId.timed()` share the same 28-character format. Use `jetId.test()` to validate either, and `jetId.timed.parse()` to extract the timestamp from a timestamped ID.
+> `jetId()` and `jetId.timed()` share the same 28-character format. Use `jetId.test()` to validate either, and `jetId.timed.parse()` to extract the timestamp from a timestamped ID.
 
-`jetIdBig()` and `jetKey()` use different formats and are available as named exports.
+> `jetIdBig()` and `jetKey()` use different formats and are available as named exports.
 
 ## `jetId`
 
