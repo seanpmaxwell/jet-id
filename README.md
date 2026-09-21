@@ -22,6 +22,34 @@ A plain ID contains 25 random Crockford base32 characters, grouped as `9-5-5-6`.
 
 <p align="center">· · ·</p>
 
+## Table of Contents
+
+<!-- toc -->
+
+- [Quick start](#quick-start)
+- [Why jet-id?](#why-jet-id)
+- [API](#api)
+- [jetId](#jetid)
+  - [`jetId()`](#jetid-1)
+  - [`jetId.test()`](#jetidtest)
+  - [`jetId.timed()`](#jetidtimed)
+  - [`jetId.timed.parse()`](#jetidtimedparse)
+- [jetIdBig](#jetidbig)
+  - [`jetIdBig()`](#jetidbig-1)
+  - [`jetIdBig.test()`](#jetidbigtest)
+  - [`jetIdBig.parse()`](#jetidbigparse)
+  - [Notes](#notes)
+- [jetKey](#jetkey)
+  - [`jetKey()`](#jetkey-1)
+  - [Notes](#notes-1)
+- [Command line](#command-line)
+  - [Options](#options)
+  - [Generator types](#generator-types)
+- [Benchmarks](#benchmarks)
+- [License](#license)
+
+<!-- tocstop -->
+
 ## Why jet-id?
 
 - **Fast:** Faster than `nanoid()` in the included [benchmarks](#benchmarks).
