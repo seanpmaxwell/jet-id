@@ -110,7 +110,7 @@ jetId.test(null); // false
 Encodes a timestamp in the first nine characters, so IDs sort by creation time under plain string comparison. Those nine characters leave 80 random bits instead of 125. Pass a timestamp in milliseconds, or omit it to use `Date.now()`.
 
 <details>
-<summary>.timed vs jetBigId()</summary>
+<summary>.timed vs jetIdMono()</summary>
 
 - **You choose the timestamp.** `jetIdMono()` always reads its own clock, so it cannot produce an ID for a record created last year. `jetId.timed(epoch)` can, which is what backfills, data imports, and deterministic tests need.
 - **Same layout as a plain ID.** A timed ID is still 28 characters in the same 9-5-5-6 shape, so plain and timestamped IDs share a column and a validator. `jetIdMono()` is a separate 44-character format.
