@@ -193,9 +193,9 @@ import { jetKey } from 'jet-id';
 jetKey(); // 'YFC75GX2KY5W183FRZA4XDVZ6PYDJPQT7JMNH3N7ZXPQ8FCW3M4G'
 ```
 
-### Notes
+> Unique IDs are designed for collision resistance, not necessarily secrecy. Use `jetKey()` when generating a secret.
 
-Unique IDs are designed for collision resistance, not necessarily secrecy. Use `jetKey()` when generating a secret.
+### Notes
 
 <details>
 <summary>Why 52 characters?</summary>
