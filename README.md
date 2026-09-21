@@ -84,7 +84,7 @@ const date = new Date(2015, 5, 3);
 const timedId = jetId.timed(date.getTime());
 ```
 
-IDs with the same timestamp are not strictly ordered. Use `jetIdBig()` when you also need ordering within a single millisecond.
+> IDs with the same timestamp are not strictly ordered. Use `jetIdBig()` when you also need ordering within a single millisecond.
 
 ### `jetId.timed.parse()`
 
