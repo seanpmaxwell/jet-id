@@ -1,4 +1,4 @@
-import jetId, { jetIdMono, jetKey } from '@src/index';
+import jetId, { jetKey } from '@src/index';
 import logger from '@src/utils/logger';
 import onInit from '@src/utils/onInit';
 
@@ -44,6 +44,6 @@ onInit.skip(() => {
 // ---- Test monotonic
 onInit.sync(() => {
   for (let i = 0; i < 100_000; i++) {
-    logger.info(jetIdMono());
+    logger.info(jetId.mono());
   }
 }, 'playground__big');

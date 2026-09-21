@@ -3,7 +3,6 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 import generateKey from '@src/api/helpers/generateKey';
-import jetIdMono from '@src/api/helpers/jetIdMono/jetIdMono';
 import jetId from '@src/api/jetId/jetId';
 
 import cmdLineParser, { ParsedCmdLineArgs } from './_internal/cmdLineParser';
@@ -27,7 +26,7 @@ const GENERATORS: Record<
   () => string
 > = {
   key: generateKey,
-  mono: jetIdMono,
+  mono: jetId.mono,
   timed: jetId.timed,
 };
 
@@ -133,7 +132,7 @@ async function loadVersionFromPkgJson(startDir: string): Promise<string> {
 }
 
 // ========================================================================= //
-//                                   EXPORT                                  //
+//                                  EXPORT                                   //
 // ========================================================================= //
 
 export default cli;

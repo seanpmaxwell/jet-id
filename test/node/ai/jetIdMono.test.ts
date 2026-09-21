@@ -9,8 +9,8 @@ import {
   vi,
 } from 'vitest';
 
-import { resetGeneratorState } from '@src/api/helpers/jetIdMono/generateMonoId';
-import { jetIdMono } from '@src/index';
+import { resetGeneratorState } from '@src/api/jetId/jetIdMono/generateMonoId';
+import jetId from '@src/index';
 
 import {
   MONO_DASH_INDICES,
@@ -64,7 +64,7 @@ describe('jetIdMono', () => {
         vi.stubGlobal('Buffer', decoder === 'buffer' ? NodeBuffer : undefined);
         try {
           const module =
-            await import('@src/api/helpers/jetIdMono/generateMonoId');
+            await import('@src/api/jetId/jetIdMono/generateMonoId');
           generateMonotonicId = module.default;
           resetGeneratorState = module.resetGeneratorState;
         } finally {
@@ -98,7 +98,7 @@ describe('jetIdMono', () => {
       });
 
       it('returns a valid id in the 9-6-8-8-9 layout', () => {
-        const id = jetIdMono();
+        const id = jetId.mono();
         expect(typeof id).toBe('string');
         expect(id).toHaveLength(MONO_ID_LENGTH);
         const segments = id.split('-');
@@ -292,13 +292,13 @@ describe('jetIdMono', () => {
   }
 });
 
-// ---- `jetIdMono.parse`
-describe('ai -> jetIdMono.parse', () => {
+// ---- `jetId.mono.parse`
+describe('ai -> jetId.mono.parse', () => {
   beforeEach(resetGeneratorState);
 
   it('agrees with the current clock', () => {
-    const id = jetIdMono();
-    const { epoch } = jetIdMono.parse(id);
+    const id = jetId.mono();
+    const { epoch } = jetId.mono.parse(id);
     const drift = Math.abs(epoch - Date.now());
     expect(drift).toBeLessThan(1_000);
   });
@@ -308,13 +308,13 @@ describe('ai -> jetIdMono.parse', () => {
     // past the ~1us bucket width, and then no two ids ever share a bucket.
     const ids: string[] = [];
     for (let i = 0; i < 5_000; i++) {
-      ids.push(jetIdMono());
+      ids.push(jetId.mono());
     }
 
     let shared = 0;
-    let previous = jetIdMono.parse(ids[0]);
+    let previous = jetId.mono.parse(ids[0]);
     for (let i = 1; i < ids.length; i++) {
-      const current = jetIdMono.parse(ids[i]);
+      const current = jetId.mono.parse(ids[i]);
       if (
         current.epoch === previous.epoch &&
         current.fraction === previous.fraction
@@ -339,7 +339,7 @@ describe('ai -> jetIdMono.parse', () => {
         remaining = Math.floor(remaining / 32);
       }
       const id = stamp + VALID_DUMMY_MONO_ID.slice(9);
-      const parsed = jetIdMono.parse(id);
+      const parsed = jetId.mono.parse(id);
       expect(parsed.epoch, `epoch ${epoch}`).toBe(epoch);
     }
   });
@@ -347,7 +347,7 @@ describe('ai -> jetIdMono.parse', () => {
   it('reads the epoch from segment one alone', () => {
     // Built by hand rather than from two generated ids, which could land
     // either side of a millisecond boundary and make this flaky.
-    const { epoch } = jetIdMono.parse(VALID_DUMMY_MONO_ID);
+    const { epoch } = jetId.mono.parse(VALID_DUMMY_MONO_ID);
     for (let i = 10; i < MONO_ID_LENGTH; i++) {
       if (MONO_DASH_INDICES.includes(i)) {
         continue;
@@ -357,14 +357,14 @@ describe('ai -> jetIdMono.parse', () => {
         i,
         VALID_DUMMY_MONO_ID[i] === 'Z' ? 'Y' : 'Z',
       );
-      const parsed = jetIdMono.parse(altered);
+      const parsed = jetId.mono.parse(altered);
       expect(altered).not.toBe(VALID_DUMMY_MONO_ID);
       expect(parsed.epoch, `index ${i}`).toBe(epoch);
     }
   });
 
   it('reads the sequence from segment two alone', () => {
-    const { fraction, counter } = jetIdMono.parse(VALID_DUMMY_MONO_ID);
+    const { fraction, counter } = jetId.mono.parse(VALID_DUMMY_MONO_ID);
     // Changing a random character must not disturb either field.
     for (let i = 17; i < MONO_ID_LENGTH; i++) {
       if (MONO_DASH_INDICES.includes(i)) {
@@ -375,7 +375,7 @@ describe('ai -> jetIdMono.parse', () => {
         i,
         VALID_DUMMY_MONO_ID[i] === 'Z' ? 'Y' : 'Z',
       );
-      const parsed = jetIdMono.parse(altered);
+      const parsed = jetId.mono.parse(altered);
       expect(parsed, `index ${i}`).toMatchObject({ fraction, counter });
     }
   });
