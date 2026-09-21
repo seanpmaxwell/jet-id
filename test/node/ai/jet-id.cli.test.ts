@@ -9,12 +9,12 @@ import cmdLineParser from '@src/cli/_internal/cmdLineParser';
 // ---- Defaults
 describe('cmdLineParser', () => {
   it('defaults to one random id', () => {
-    expect(cmdLineParser([])).toEqual({
+    const parsed = cmdLineParser([]);
+    expect(parsed).toEqual({
       help: false,
       version: false,
       count: 1,
-      timed: false,
-      key: false,
+      type: null,
     });
   });
 
@@ -28,43 +28,75 @@ describe('cmdLineParser', () => {
         ['--count', '5'],
         ['-c', '5'],
       ],
-      [['--timed'], ['-t']],
-      [['--key'], ['-k']],
+      [
+        ['--type', 'big'],
+        ['-t', 'big'],
+      ],
     ];
     for (const [long, short] of pairs) {
-      expect(cmdLineParser(short), short.join(' ')).toEqual(
-        cmdLineParser(long),
-      );
+      const shortParsed = cmdLineParser(short);
+      const longParsed = cmdLineParser(long);
+      const label = short.join(' ');
+      expect(shortParsed, label).toEqual(longParsed);
     }
   });
 
   it('parses --count', () => {
-    expect(cmdLineParser(['--count', '5']).count).toBe(5);
-    expect(cmdLineParser(['-c', '5']).count).toBe(5);
-    expect(cmdLineParser(['--count=5']).count).toBe(5);
+    for (const args of [['--count', '5'], ['-c', '5'], ['--count=5']]) {
+      const parsed = cmdLineParser(args);
+      expect(parsed.count, args.join(' ')).toBe(5);
+    }
   });
 
-  it('parses --timed', () => {
-    expect(cmdLineParser(['--timed']).timed).toBe(true);
-    expect(cmdLineParser(['-t']).timed).toBe(true);
+  it('parses every --type value', () => {
+    for (const type of ['timed', 'big', 'key'] as const) {
+      const forms = [['--type', type], ['-t', type], [`--type=${type}`]];
+      for (const args of forms) {
+        const parsed = cmdLineParser(args);
+        expect(parsed.type, args.join(' ')).toBe(type);
+      }
+    }
   });
 
-  it('parses --key', () => {
-    expect(cmdLineParser(['--key']).key).toBe(true);
-    expect(cmdLineParser(['-k']).key).toBe(true);
+  it('lower-cases the --type value', () => {
+    const upper = cmdLineParser(['-t', 'BIG']);
+    expect(upper.type).toBe('big');
+
+    const mixed = cmdLineParser(['-t', 'Timed']);
+    expect(mixed.type).toBe('timed');
   });
 
-  it('combines --timed and --count in any order', () => {
+  it('combines --type and --count in any order', () => {
     for (const args of [
-      ['-t', '-c', '3'],
-      ['-c', '3', '-t'],
-      ['--count', '3', '--timed'],
-      ['-tc', '3'],
+      ['-t', 'big', '-c', '3'],
+      ['-c', '3', '-t', 'big'],
+      ['--count', '3', '--type', 'big'],
+      ['--type=big', '--count=3'],
     ]) {
       const parsed = cmdLineParser(args);
-      expect(parsed.timed, args.join(' ')).toBe(true);
+      expect(parsed.type, args.join(' ')).toBe('big');
       expect(parsed.count, args.join(' ')).toBe(3);
     }
+  });
+
+  it('rejects a --type value it does not know', () => {
+    for (const value of ['', 'mono', 'jetid', 'bigger', '1']) {
+      expect(() => cmdLineParser(['-t', value]), value).toThrow();
+    }
+  });
+
+  it('names the received value when --type is rejected', () => {
+    // `-t=big` arrives as "=big", so a message listing only the allowed
+    // values would read as wrong to someone who did type "big".
+    expect(() => cmdLineParser(['-t=big'])).toThrow('received "=big"');
+    expect(() => cmdLineParser(['-t', 'BIGGER'])).toThrow('received "BIGGER"');
+  });
+
+  it('requires a value for --type', () => {
+    // `-t` alone has nothing to consume, and `-t -c` would otherwise read
+    // the next flag as the type.
+    expect(() => cmdLineParser(['-t'])).toThrow();
+    expect(() => cmdLineParser(['-t', '-c', '10'])).toThrow();
   });
 
   it('rejects a count that is not a positive integer', () => {
@@ -78,10 +110,20 @@ describe('cmdLineParser', () => {
     expect(() => cmdLineParser(['-z'])).toThrow();
   });
 
+  it('rejects the boolean flags this replaced', () => {
+    // `--timed`, `--big` and `--key` are now `--type` values.
+    for (const args of [['--timed'], ['--big'], ['--key'], ['-b'], ['-k']]) {
+      expect(() => cmdLineParser(args), args.join(' ')).toThrow();
+    }
+  });
+
   it('requires --help and --version to come first', () => {
     expect(() => cmdLineParser(['-c', '2', '--help'])).toThrow();
     expect(() => cmdLineParser(['-c', '2', '--version'])).toThrow();
-    expect(cmdLineParser(['--help']).help).toBe(true);
-    expect(cmdLineParser(['--version']).version).toBe(true);
+    const help = cmdLineParser(['--help']);
+    expect(help.help).toBe(true);
+
+    const version = cmdLineParser(['--version']);
+    expect(version.version).toBe(true);
   });
 });

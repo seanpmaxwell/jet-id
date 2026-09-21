@@ -5,13 +5,13 @@ import util from 'util';
 // ========================================================================= //
 
 const ShouldBeFirstSet = new Set(['--help', '-h', '--version', '-v']);
+const TypeValuesSet = new Set(['big', 'timed', 'key']);
 
 const PARSE_ARG_OPTIONS = {
   help: { type: 'boolean', short: 'h' },
   version: { type: 'boolean', short: 'v' },
   count: { type: 'string', short: 'c' },
-  timed: { type: 'boolean', short: 't' },
-  key: { type: 'boolean', short: 'k' },
+  type: { type: 'string', short: 't' },
 } as const;
 
 // ========================================================================= //
@@ -23,8 +23,7 @@ export interface ParsedCmdLineArgs {
   help: boolean;
   version: boolean;
   count: number;
-  timed: boolean;
-  key: boolean;
+  type: 'big' | 'timed' | 'key' | null;
 }
 
 // ========================================================================= //
@@ -44,6 +43,8 @@ function cmdLineParser(args: string[]): ParsedCmdLineArgs {
     args,
     options: PARSE_ARG_OPTIONS,
   });
+
+  // ---- `help`/`version`
   // Validate helpers (`args[0]` may be in the `--flag=value` form)
   const firstFlag = args[0]?.split('=')[0];
   if ((pArgs.help || pArgs.version) && !ShouldBeFirstSet.has(firstFlag)) {
@@ -51,6 +52,8 @@ function cmdLineParser(args: string[]): ParsedCmdLineArgs {
       'If specified, the flags [--version,--help] should come first',
     );
   }
+
+  // ---- `count`
   // Validate `count`. Without this, a non-numeric or zero count prints nothing
   // at all, which reads like the command silently did nothing.
   const count = pArgs.count === undefined ? 1 : Number(pArgs.count);
@@ -59,13 +62,25 @@ function cmdLineParser(args: string[]): ParsedCmdLineArgs {
       `The --count flag must be a positive integer: received "${pArgs.count}"`,
     );
   }
-  // Return
+
+  // ---- `type`
+  // Validate the type flag
+  const respType = pArgs.type === undefined ? null : pArgs.type.toLowerCase();
+  if (respType !== null && !TypeValuesSet.has(respType)) {
+    // Echo what arrived, not the lower-cased copy: `-t=big` reaches here
+    // as "=big", and a message quoting only the allowed values would look
+    // wrong to someone who did type "big".
+    throw new Error(
+      `Value passed to --type (-t) must be big/timed/key: received "${pArgs.type}"`,
+    );
+  }
+
+  // ---- Return
   return {
     help: !!pArgs.help,
     version: !!pArgs.version,
     count,
-    timed: !!pArgs.timed,
-    key: !!pArgs.key,
+    type: respType as ParsedCmdLineArgs['type'],
   };
 }
 

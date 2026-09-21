@@ -1,21 +1,15 @@
-import {
-  ALPHABET,
-  CODES,
-  DASH_CODE,
-  DOUBLE_CODES,
-  fillRandom,
-  ID_LENGTH,
-  SEGMENT_1_LENGTH,
-} from './_common';
+import { CODES, DASH_CODE, DOUBLE_CODES } from '../_common/alphabet';
+import { createPoolDecoder, onSnapshotRestore } from '../_common/pool';
+import { fillBufferWithRandomBytes } from '../_common/random';
+import { encodeTimestamp, TIMESTAMP_LIMIT } from '../_common/timestamp';
+
+import { ID_LENGTH, SEGMENT_1_LENGTH } from './_internal';
 
 // ========================================================================= //
 //                                 CONSTANTS                                 //
 // ========================================================================= //
 
-// Nine Crockford base32 characters can represent 45 bits.
-// Reject timestamps outside that range rather than silently truncate them.
-const TIMESTAMP_LIMIT = 32 ** SEGMENT_1_LENGTH;
-
+// ---- Character pool
 // Only the suffix is pooled: "-xxxxx-xxxxx-xxxxxx".
 // Add one internal padding byte so each slot can be written four bytes
 // at a time. That padding byte is never included in a returned ID.
@@ -35,7 +29,8 @@ const CHUNKS = 4;
 
 // Each suffix uses 80 random bits for its 16 characters.
 // Read three aligned 32-bit words per suffix and leave 16 bits unused.
-const CHUNK_RANDOM_BYTES = CHUNK_IDS * 12; // 3072
+const RANDOM_WORDS_PER_ID = 3;
+const CHUNK_RANDOM_BYTES = CHUNK_IDS * RANDOM_WORDS_PER_ID * 4; // 3072
 const CHUNK_RANDOM_WORDS = CHUNK_RANDOM_BYTES >>> 2; // 768
 const RANDOM_BYTES = CHUNK_RANDOM_BYTES * CHUNKS; // 12288
 
@@ -59,9 +54,11 @@ const DASH_BYTE_2 = DASH_CODE << 16;
 // chunk 0. Later chunks' random bytes sit beyond the character area.
 //
 // We always build chunk 0 first. For each suffix, we read all three random
-// words before writing its five output words. After k suffixes, output
-// ends at 20k and unread randomness starts at 2048 + 12k. The output
-// cannot reach unread randomness while k is at most 256.
+// words before writing its five output words. Suffix i writes words
+// 5i..5i+4 and suffix i+1 reads from word 512+3(i+1); since
+// 5i+4 < 515+3i for all i < 255, and suffix 255 reads its own words
+// before writing, no unread randomness is ever overwritten. Re-check this
+// inequality if CHUNK_IDS, SLOT_BYTES, or RANDOM_START change.
 const poolBytes = new Uint8Array(BUFFER_BYTES);
 const chunkBytes = poolBytes.subarray(0, CHUNK_BYTES);
 const poolWords = new Uint32Array(poolBytes.buffer, 0, CHUNK_BYTES >>> 2);
@@ -80,34 +77,16 @@ let nextChunk = CHUNKS; // Fetch fresh random bytes on the first refill.
 // A Node startup snapshot can save this module with unused suffixes still
 // waiting in the pool. Clear that saved state when the snapshot is restored
 // so separate instances don't hand out suffixes from the same saved batch.
+// Dropping poolStr also lets the saved chunk string be collected.
 // This does nothing outside Node.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const v8 = (globalThis as any).process?.getBuiltinModule?.('node:v8');
-if (v8?.startupSnapshot?.isBuildingSnapshot()) {
-  v8.startupSnapshot.addDeserializeCallback(() => {
-    poolOffset = CHUNK_BYTES;
-    nextChunk = CHUNKS;
-  });
-}
+onSnapshotRestore(() => {
+  poolStr = '';
+  poolOffset = CHUNK_BYTES;
+  nextChunk = CHUNKS;
+});
 
 // ---- Turn the pool into a string
-// Our characters and zero padding bytes are all ASCII, so each option
-// below gives the same text. Padding is excluded when taking suffixes.
-// Use Buffer's direct latin1Slice method when available, or its regular
-// toString method otherwise. Without Buffer, use TextDecoder.
-let decodePool: () => string;
-if (typeof Buffer !== 'undefined') {
-  const view = Buffer.from(poolBytes.buffer, 0, CHUNK_BYTES) as Buffer & {
-    latin1Slice?: (start: number, end: number) => string;
-  };
-  decodePool =
-    typeof view.latin1Slice === 'function'
-      ? () => view.latin1Slice!(0, CHUNK_BYTES)
-      : () => view.toString('latin1');
-} else {
-  const decoder = new TextDecoder('latin1');
-  decodePool = () => decoder.decode(chunkBytes);
-}
+const decodePool = createPoolDecoder(chunkBytes);
 
 // ========================================================================= //
 //                                 FUNCTIONS                                 //
@@ -126,24 +105,21 @@ if (typeof Buffer !== 'undefined') {
  * so IDs are not guaranteed to increase monotonically.
  */
 function generateTimedId(epoch = Date.now()): string {
-  // Validate epoch
   if (!Number.isSafeInteger(epoch) || epoch < 0 || epoch >= TIMESTAMP_LIMIT) {
     throw new RangeError(
       'Timestamp must be a nonnegative integer that fits in nine Crockford base32 characters.',
     );
   }
-  // Arithmetic division preserves all timestamp bits. JavaScript's
-  // bitwise shifts would truncate the timestamp to 32 bits.
-  let remaining = epoch;
-  let timestamp = '';
-  for (let i = 0; i < SEGMENT_1_LENGTH; i++) {
-    timestamp = ALPHABET[remaining % 32] + timestamp;
-    remaining = Math.floor(remaining / 32);
+
+  // The range check above is the precondition `encodeTimestamp` relies on.
+  const timestamp = encodeTimestamp(epoch);
+
+  if (poolOffset === CHUNK_BYTES) {
+    refillPool();
   }
-  if (poolOffset === CHUNK_BYTES) refillPool();
+
   const offset = poolOffset;
   poolOffset = offset + SLOT_BYTES;
-  // Return
   return timestamp + poolStr.substring(offset, offset + SUFFIX_LENGTH);
 }
 
@@ -153,7 +129,8 @@ function generateTimedId(epoch = Date.now()): string {
  *
  * Each suffix uses three random 32-bit words. The first two supply
  * 30 bits each, and the third supplies 20 bits, for 80 random bits total.
- * The remaining 16 source bits are unused.
+ * The remaining 16 source bits are unused (r0 and r1 bits 30-31,
+ * r2 bits 20-31).
  *
  * Here's where the characters, dashes, and padding go.
  * The c labels count the 16 random characters, excluding dashes:
@@ -171,15 +148,16 @@ function generateTimedId(epoch = Date.now()): string {
  */
 function refillPool(): void {
   if (nextChunk === CHUNKS) {
-    fillRandom(randomBytes);
+    fillBufferWithRandomBytes(randomBytes);
     nextChunk = 0;
   }
 
   for (
     let id = 0, r = nextChunk * CHUNK_RANDOM_WORDS, w = 0;
     id < CHUNK_IDS;
-    id++, r += 3, w += WORDS_PER_ID
+    id++, r += RANDOM_WORDS_PER_ID, w += WORDS_PER_ID
   ) {
+    // Read all three words before writing into the overlapping buffer.
     const r0 = randomWords[r];
     const r1 = randomWords[r + 1];
     const r2 = randomWords[r + 2];

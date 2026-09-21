@@ -1,4 +1,6 @@
-import { DOUBLE_CODES, fillRandom } from './_common';
+import { DOUBLE_CODES } from '../_common/alphabet';
+import { createPoolDecoder, onSnapshotRestore } from '../_common/pool';
+import { fillBufferWithRandomBytes } from '../_common/random';
 
 // ========================================================================= //
 //                                 CONSTANTS                                 //
@@ -9,11 +11,11 @@ const ID_LENGTH = 52;
 // Write four characters at a time.
 const WORDS_PER_ID = ID_LENGTH >>> 2; // 13
 
-// Keep chunks small to limit memory retained by individual ID strings.
+// Keep chunks small to limit memory retained by individual key strings.
 const CHUNK_IDS = 256;
 const CHUNK_BYTES = ID_LENGTH * CHUNK_IDS; // 13312
 
-// Each ID uses 260 random bits for its 52 characters.
+// Each key uses 260 random bits for its 52 characters.
 // Read nine 32-bit words (288 bits), leaving 28 bits unused.
 const RANDOM_WORDS_PER_ID = 9;
 const CHUNK_RANDOM_WORDS = CHUNK_IDS * RANDOM_WORDS_PER_ID; // 2304
@@ -32,14 +34,13 @@ const BUFFER_BYTES = RANDOM_START + RANDOM_BYTES; // 40960
 //                                   INIT                                    //
 // ========================================================================= //
 
-// ============================= Character Pool ============================ //
-
+// ---- Character Pool
 // The first CHUNK_BYTES bytes hold the current chunk's characters.
 // Chunk 0's random bytes overlap that character area. Later chunks'
 // random bytes sit beyond it.
 //
-// Read all nine random words for an ID before writing its characters.
-// Each ID expands 36 random bytes into 52 character bytes. The initial
+// Read all nine random words for a key before writing its characters.
+// Each key expands 36 random bytes into 52 character bytes. The initial
 // 4096-byte gap prevents writes from reaching unread random bytes.
 const poolBytes = new Uint8Array(BUFFER_BYTES);
 const chunkBytes = poolBytes.subarray(0, CHUNK_BYTES);
@@ -57,40 +58,27 @@ let nextChunk = CHUNKS;
 
 // ---- Snapshot safety
 // Discard saved pool state when a Node startup snapshot is restored,
-// preventing separate instances from returning the same saved IDs.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const v8 = (globalThis as any).process?.getBuiltinModule?.('node:v8');
-if (v8?.startupSnapshot?.isBuildingSnapshot()) {
-  v8.startupSnapshot.addDeserializeCallback(() => {
-    poolOffset = CHUNK_BYTES;
-    nextChunk = CHUNKS;
-  });
-}
+// preventing separate instances from returning the same saved keys.
+// Dropping poolStr also lets the saved chunk string be collected.
+onSnapshotRestore(() => {
+  poolStr = '';
+  poolOffset = CHUNK_BYTES;
+  nextChunk = CHUNKS;
+});
 
 // ---- Turn the pool into a string
-let decodePool: () => string;
-if (typeof Buffer !== 'undefined') {
-  const view = Buffer.from(poolBytes.buffer, 0, CHUNK_BYTES) as Buffer & {
-    latin1Slice?: (start: number, end: number) => string;
-  };
-  decodePool =
-    typeof view.latin1Slice === 'function'
-      ? () => view.latin1Slice!(0, CHUNK_BYTES)
-      : () => view.toString('latin1');
-} else {
-  const decoder = new TextDecoder('latin1');
-  decodePool = () => decoder.decode(chunkBytes);
-}
+const decodePool = createPoolDecoder(chunkBytes);
 
 // ========================================================================= //
 //                                 FUNCTIONS                                 //
 // ========================================================================= //
 
 /**
- * Returns a random 52-character ID using Crockford base32 characters.
+ * Returns a random 52-character key using Crockford base32 characters.
  *
- * All characters come from the platform's secure random source.
- * IDs contain no separators or timestamps.
+ * All 52 characters come from the platform's secure random source. Keys
+ * contain no separators and no timestamp, and they are not jet-ids: at 52
+ * characters they fail `jetId.test` and `jetIdBig.test` alike.
  */
 function generateKey(): string {
   if (poolOffset === CHUNK_BYTES) {
@@ -103,7 +91,7 @@ function generateKey(): string {
 }
 
 /**
- * Builds the next chunk of 52-character IDs.
+ * Builds the next chunk of 52-character keys.
  * Fetches more random bytes when the current batch runs out.
  *
  * The first eight random words each supply three character pairs.
@@ -113,7 +101,7 @@ function generateKey(): string {
  */
 function refillPool(): void {
   if (nextChunk === CHUNKS) {
-    fillRandom(randomBytes);
+    fillBufferWithRandomBytes(randomBytes);
     nextChunk = 0;
   }
 
