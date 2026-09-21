@@ -145,6 +145,7 @@ vite.config.ts.timestamp-*
 private-notes.md
 archive
 **/*.tmp.*
+**/*.tmp/**
 
 lib
 workflows
