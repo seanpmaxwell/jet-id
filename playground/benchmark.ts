@@ -2,6 +2,7 @@ import { randomUUID } from 'crypto';
 import { customAlphabet, nanoid } from 'nanoid';
 import { cpus } from 'os';
 import { performance } from 'perf_hooks';
+import { monotonicFactory, ulid } from 'ulid';
 import { v4 as uuidv4 } from 'uuid';
 
 import logger from '@src/utils/logger';
@@ -18,6 +19,10 @@ const CROCKFORD_ALPHABET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
 const BATCH_SIZE = 16_384;
 const WARMUP_MS = 500;
 const SAMPLE_MS = 500;
+
+// ULID's monotonic mode is a factory that keeps its own counter, like
+// jetIdBig; one instance for the whole run so the comparison is fair.
+const ulidMonotonic = monotonicFactory();
 const ROUNDS = 7;
 
 // ========================================================================= //
@@ -39,6 +44,12 @@ onInit.sync(() => {
       generate: jetId,
       chars: 28,
       bits: 125,
+    },
+    {
+      name: 'jetId.timed()',
+      generate: () => jetId.timed(),
+      chars: 28,
+      bits: 80,
     },
     {
       name: 'nanoid()',
@@ -63,6 +74,18 @@ onInit.sync(() => {
       generate: () => jetIdBig(),
       chars: 44,
       bits: 125,
+    },
+    {
+      name: 'ulid()',
+      generate: () => ulid(),
+      chars: 26,
+      bits: 80,
+    },
+    {
+      name: 'ulid (monotonic)',
+      generate: () => ulidMonotonic(),
+      chars: 26,
+      bits: 80,
     },
     {
       name: 'uuid v4()',

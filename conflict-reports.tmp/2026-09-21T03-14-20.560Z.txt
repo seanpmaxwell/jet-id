@@ -1,0 +1,18 @@
+Conflict Report
+===============
+Source branch:      development (c998d65b71f189c49143132e575ac4ee92303e77)
+Destination branch: main__temp{1789960460479} (ed6f546ecaa57562e409075d4071b33611b9e00a)
+Comparison run at:  2026-09-21T03:14:20.560Z
+
+Conflicts found: 1
+
+---
+CONFLICT (content): Merge conflict in README.md
+
+Conflict locations
+------------------
+
+README.md:
+  line 253: <<<<<<< development
+  line 265: =======
+  line 273: >>>>>>> main__temp{1789960460479}
