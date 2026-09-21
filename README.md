@@ -250,13 +250,17 @@ jet-id --type=key     # One 52-character secret key.
 
 | Generator | Characters | Random bits | Median ops/sec | ns/ID | Relative throughput |
 |---|---:|---:|---:|---:|---:|
-| `jetId()` | 28 | 125 | 81,127,524 | 12.3 | 1.00x |
-| `nanoid()` | 21 | 126 | 52,583,004 | 19.0 | 0.65x |
-| Nano ID: Crockford, 25 chars | 25 | 125 | 46,942,586 | 21.3 | 0.58x |
-| Nano ID: Crockford, 9-5-5-6 | 28 | 125 | 15,589,642 | 64.1 | 0.19x |
-| `jetIdBig()` | 44 | 125 | 13,035,960 | 76.7 | 0.16x |
-| `uuid.v4()` | 36 | 122 | 8,577,377 | 116.6 | 0.11x |
-| `crypto.randomUUID()` | 36 | 122 | 9,964,004 | 100.4 | 0.12x |
+| jetId() | 28 | 125 | 81,127,524 | 12.3 | 1.00x |
+| `jetId.timed()` | 28 | 80 | 20,841,743 | 48.0 | 0.27x |
+| `nanoid()` | 21 | 126 | 51,207,047 | 19.5 | 0.65x |
+| Nano ID: Crockford, 25 chars | 25 | 125 | 45,876,959 | 21.8 | 0.58x |
+| Nano ID: Crockford, 9-5-5-6 | 28 | 125 | 15,110,576 | 66.2 | 0.19x |
+| `jetIdBig()` | 44 | 125 | 12,640,666 | 79.1 | 0.16x |
+| ulid() | 26 | 80 | 108,505 | 9216.2 | 0.00x |
+| ulid (monotonic) | 26 | 80 | 3,637,167 | 274.9 | 0.05x |
+| `uuid.v4()` | 36 | 122 | 8,075,084 | 123.8 | 0.10x |
+| `crypto.randomUUID()` | 36 | 122 | 9,295,197 | 107.6 | 0.12x |
+
 
 ## License
 

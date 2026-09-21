@@ -65,9 +65,7 @@ async function swap(): Promise<void> {
  * unguarded restore is what used to overwrite the files it meant to protect.
  */
 async function restore(): Promise<void> {
-  if (await notExists(BACKUP)) {
-    return;
-  }
+  if (await notExists(BACKUP)) return;
   await fs.copyFile(BACKUP, ROOT_README);
   await fs.rm(BACKUP, { force: true });
   logger.info('README restored.');
