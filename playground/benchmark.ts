@@ -8,7 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import logger from '@src/utils/logger';
 import onInit from '@src/utils/onInit';
 
-import jetId, { jetIdBig } from '../src';
+import jetId, { jetIdMono } from '../src';
 
 // ========================================================================= //
 //                                 CONSTANTS                                 //
@@ -21,7 +21,7 @@ const WARMUP_MS = 500;
 const SAMPLE_MS = 500;
 
 // ULID's monotonic mode is a factory that keeps its own counter, like
-// jetIdBig; one instance for the whole run so the comparison is fair.
+// jetIdMono; one instance for the whole run so the comparison is fair.
 const ulidMonotonic = monotonicFactory();
 const ROUNDS = 7;
 
@@ -70,8 +70,8 @@ onInit.sync(() => {
       bits: 125,
     },
     {
-      name: 'jetIdBig',
-      generate: () => jetIdBig(),
+      name: 'jetIdMono',
+      generate: () => jetIdMono(),
       chars: 44,
       bits: 125,
     },

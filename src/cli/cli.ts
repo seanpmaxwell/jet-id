@@ -3,7 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 import generateKey from '@src/api/helpers/generateKey';
-import jetIdBig from '@src/api/helpers/jetIdBig/jetIdBig';
+import jetIdMono from '@src/api/helpers/jetIdMono/jetIdMono';
 import jetId from '@src/api/jetId/jetId';
 
 import cmdLineParser, { ParsedCmdLineArgs } from './_internal/cmdLineParser';
@@ -26,8 +26,8 @@ const GENERATORS: Record<
   NonNullable<ParsedCmdLineArgs['type']>,
   () => string
 > = {
-  big: jetIdBig,
   key: generateKey,
+  mono: jetIdMono,
   timed: jetId.timed,
 };
 

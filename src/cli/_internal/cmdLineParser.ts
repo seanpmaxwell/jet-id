@@ -5,7 +5,7 @@ import util from 'util';
 // ========================================================================= //
 
 const ShouldBeFirstSet = new Set(['--help', '-h', '--version', '-v']);
-const TypeValuesSet = new Set(['big', 'timed', 'key']);
+const TypeValuesSet = new Set(['mono', 'timed', 'key']);
 
 const PARSE_ARG_OPTIONS = {
   help: { type: 'boolean', short: 'h' },
@@ -23,7 +23,7 @@ export interface ParsedCmdLineArgs {
   help: boolean;
   version: boolean;
   count: number;
-  type: 'big' | 'timed' | 'key' | null;
+  type: 'mono' | 'timed' | 'key' | null;
 }
 
 // ========================================================================= //
@@ -67,11 +67,11 @@ function cmdLineParser(args: string[]): ParsedCmdLineArgs {
   // Validate the type flag
   const respType = pArgs.type === undefined ? null : pArgs.type.toLowerCase();
   if (respType !== null && !TypeValuesSet.has(respType)) {
-    // Echo what arrived, not the lower-cased copy: `-t=big` reaches here
-    // as "=big", and a message quoting only the allowed values would look
-    // wrong to someone who did type "big".
+    // Echo what arrived, not the lower-cased copy: `-t=mono` reaches here
+    // as "=mono", and a message quoting only the allowed values would look
+    // wrong to someone who did type "mono".
     throw new Error(
-      `Value passed to --type (-t) must be big/timed/key: received "${pArgs.type}"`,
+      `Value passed to --type (-t) must be mono/timed/key: received "${pArgs.type}"`,
     );
   }
 

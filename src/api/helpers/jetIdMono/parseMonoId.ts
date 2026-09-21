@@ -6,17 +6,17 @@ import {
   FRACTION_INDEX,
   SEGMENT_1_LENGTH,
 } from './_internal';
-import validateMonotonicBigId from './validateMonotonicBigId';
+import validateMonoId from './validateMonoId';
 
 // ========================================================================= //
 //                                 FUNCTIONS                                 //
 // ========================================================================= //
 
 /**
- * Reads a big ID back into its three encoded parts.
+ * Reads a monotonic ID back into its three encoded parts.
  *
  * Accepts uppercase and lowercase alike, and any value at all: anything
- * that fails `validateMonotonicBigId` throws, so callers with untyped input
+ * that fails `validateMonoId` throws, so callers with untyped input
  * need no cast.
  *
  * `epoch` is the one to use as a timestamp: it is whole milliseconds and
@@ -38,13 +38,13 @@ import validateMonotonicBigId from './validateMonotonicBigId';
  * across processes is meaningless as well, since each anchors to its own
  * `performance.timeOrigin`.
  */
-function parseMonotonicBigId(id: unknown): {
+function parseMonoId(id: unknown): {
   epoch: number;
   fraction: number;
   counter: number;
 } {
-  if (!validateMonotonicBigId(id)) {
-    throw new TypeError('Invalid big ID.');
+  if (!validateMonoId(id)) {
+    throw new TypeError('Invalid mono ID.');
   }
   // Arithmetic preserves the full 45-bit timestamp.
   // Bitwise operations would truncate it to 32 bits.
@@ -69,4 +69,4 @@ function parseMonotonicBigId(id: unknown): {
 //                                  EXPORT                                   //
 // ========================================================================= //
 
-export default parseMonotonicBigId;
+export default parseMonoId;

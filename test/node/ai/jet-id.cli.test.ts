@@ -29,8 +29,8 @@ describe('cmdLineParser', () => {
         ['-c', '5'],
       ],
       [
-        ['--type', 'big'],
-        ['-t', 'big'],
+        ['--type', 'mono'],
+        ['-t', 'mono'],
       ],
     ];
     for (const [long, short] of pairs) {
@@ -49,7 +49,7 @@ describe('cmdLineParser', () => {
   });
 
   it('parses every --type value', () => {
-    for (const type of ['timed', 'big', 'key'] as const) {
+    for (const type of ['timed', 'mono', 'key'] as const) {
       const forms = [['--type', type], ['-t', type], [`--type=${type}`]];
       for (const args of forms) {
         const parsed = cmdLineParser(args);
@@ -59,8 +59,8 @@ describe('cmdLineParser', () => {
   });
 
   it('lower-cases the --type value', () => {
-    const upper = cmdLineParser(['-t', 'BIG']);
-    expect(upper.type).toBe('big');
+    const upper = cmdLineParser(['-t', 'MONO']);
+    expect(upper.type).toBe('mono');
 
     const mixed = cmdLineParser(['-t', 'Timed']);
     expect(mixed.type).toBe('timed');
@@ -68,28 +68,30 @@ describe('cmdLineParser', () => {
 
   it('combines --type and --count in any order', () => {
     for (const args of [
-      ['-t', 'big', '-c', '3'],
-      ['-c', '3', '-t', 'big'],
-      ['--count', '3', '--type', 'big'],
-      ['--type=big', '--count=3'],
+      ['-t', 'mono', '-c', '3'],
+      ['-c', '3', '-t', 'mono'],
+      ['--count', '3', '--type', 'mono'],
+      ['--type=mono', '--count=3'],
     ]) {
       const parsed = cmdLineParser(args);
-      expect(parsed.type, args.join(' ')).toBe('big');
+      expect(parsed.type, args.join(' ')).toBe('mono');
       expect(parsed.count, args.join(' ')).toBe(3);
     }
   });
 
   it('rejects a --type value it does not know', () => {
-    for (const value of ['', 'mono', 'jetid', 'bigger', '1']) {
+    for (const value of ['', 'big', 'jetid', 'monotonic', '1']) {
       expect(() => cmdLineParser(['-t', value]), value).toThrow();
     }
   });
 
   it('names the received value when --type is rejected', () => {
-    // `-t=big` arrives as "=big", so a message listing only the allowed
-    // values would read as wrong to someone who did type "big".
-    expect(() => cmdLineParser(['-t=big'])).toThrow('received "=big"');
-    expect(() => cmdLineParser(['-t', 'BIGGER'])).toThrow('received "BIGGER"');
+    // `-t=mono` arrives as "=mono", so a message listing only the allowed
+    // values would read as wrong to someone who did type "mono".
+    expect(() => cmdLineParser(['-t=mono'])).toThrow('received "=mono"');
+    expect(() => cmdLineParser(['-t', 'MONOTONIC'])).toThrow(
+      'received "MONOTONIC"',
+    );
   });
 
   it('requires a value for --type', () => {
@@ -111,8 +113,8 @@ describe('cmdLineParser', () => {
   });
 
   it('rejects the boolean flags this replaced', () => {
-    // `--timed`, `--big` and `--key` are now `--type` values.
-    for (const args of [['--timed'], ['--big'], ['--key'], ['-b'], ['-k']]) {
+    // `--timed`, `--mono` and `--key` are now `--type` values.
+    for (const args of [['--timed'], ['--mono'], ['--key'], ['-m'], ['-k']]) {
       expect(() => cmdLineParser(args), args.join(' ')).toThrow();
     }
   });

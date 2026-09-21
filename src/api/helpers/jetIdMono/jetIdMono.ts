@@ -1,15 +1,15 @@
-import generateMonotonicBigId from './generateMonotonicBigId';
-import parseMonotonicBigId from './parseMonotonicBigId';
-import validateMonotonicBigId from './validateMonotonicBigId';
+import generateMonoId from './generateMonoId';
+import parseMonoId from './parseMonoId';
+import validateMonoId from './validateMonoId';
 
 // ========================================================================= //
 //                                   TYPES                                   //
 // ========================================================================= //
 
-interface jetIdBig {
+interface jetIdMono {
   (): string;
   test(id: unknown): boolean;
-  // Written out here rather than as `typeof parseMonotonicBigId`, so the
+  // Written out here rather than as `typeof parseMonoId`, so the
   // bundled .d.ts carries no internal function name. The parser declares
   // the same shape; if the two ever drift, the assignment below fails to
   // typecheck.
@@ -24,12 +24,12 @@ interface jetIdBig {
 //                                   INIT                                    //
 // ========================================================================= //
 
-const jetIdBig = generateMonotonicBigId as jetIdBig;
-jetIdBig.test = validateMonotonicBigId;
-jetIdBig.parse = parseMonotonicBigId;
+const jetIdMono = generateMonoId as jetIdMono;
+jetIdMono.test = validateMonoId;
+jetIdMono.parse = parseMonoId;
 
 // ========================================================================= //
 //                                  EXPORT                                   //
 // ========================================================================= //
 
-export default jetIdBig;
+export default jetIdMono;

@@ -118,7 +118,7 @@ const decodePool = createPoolDecoder(chunkBytes);
  *
  * Ordering is local to this module instance and does not span resets.
  */
-function generateMonotonicBigId(): string {
+function generateMonoId(): string {
   // Read the current global clock so tests can replace Performance
   // without reloading this module.
   const clock = globalThis.performance;
@@ -297,4 +297,4 @@ export function resetGeneratorState(): void {
 //                                  EXPORT                                   //
 // ========================================================================= //
 
-export default generateMonotonicBigId;
+export default generateMonoId;

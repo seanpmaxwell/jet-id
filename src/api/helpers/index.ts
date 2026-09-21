@@ -1,2 +1,2 @@
 export { default as jetKey } from './generateKey';
-export { default as jetIdBig } from './jetIdBig/jetIdBig';
+export { default as jetIdMono } from './jetIdMono/jetIdMono';
