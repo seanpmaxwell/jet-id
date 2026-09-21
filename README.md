@@ -302,7 +302,7 @@ jet-id --type=key     # One 52-character secret key.
 | Nano ID: Crockford, 25 chars | 25 | 125 | 45,876,959 | 21.8 | 0.58x |
 | `jetId.timed()` | 28 | 80 | 20,841,743 | 48.0 | 0.27x |
 | Nano ID: Crockford, 9-5-5-6 | 28 | 125 | 15,110,576 | 66.2 | 0.19x |
-| `jetIdBig()` | 44 | 125 | 12,640,666 | 79.1 | 0.16x |
+| `jetIdMono()` | 44 | 125 | 12,640,666 | 79.1 | 0.16x |
 | `crypto.randomUUID()` | 36 | 122 | 9,295,197 | 107.6 | 0.12x |
 | `uuid.v4()` | 36 | 122 | 8,075,084 | 123.8 | 0.10x |
 | ulid (monotonic) | 26 | 80 | 3,637,167 | 274.9 | 0.05x |
