@@ -20,6 +20,8 @@ jetId(); // '9Q8SWWBTY-7NVXM-FT9S6-XB4R3M'
 
 A plain ID contains 25 random Crockford base32 characters, grouped as `9-5-5-6`. Including the three dashes, each ID is 28 characters long.
 
+<p align="center">· · ·</p>
+
 ## Why jet-id?
 
 - **Fast:** Faster than `nanoid()` in the included [benchmarks](#benchmarks).
@@ -29,6 +31,8 @@ A plain ID contains 25 random Crockford base32 characters, grouped as `9-5-5-6`.
 - **Flexible:** Choose random IDs, timestamped IDs, strictly ordered IDs, or secret keys.
 - **Strong randomness:** `jetId()` and `jetIdBig()` provide 125 random bits. For comparison, UUID v4 has 122.
 - **Simple API:** Generate IDs, validate their format, and extract encoded timestamps with a few functions.
+
+<p align="center">· · ·</p>
 
 ## API
 
@@ -43,7 +47,9 @@ A plain ID contains 25 random Crockford base32 characters, grouped as `9-5-5-6`.
 
 > `jetIdBig()` and `jetKey()` use different formats and are available as named exports.
 
-## `jetId`
+<p align="center">· · ·</p>
+
+## jetId
 
 The default export generates random IDs and provides helpers for validation and timestamping.
 
@@ -102,7 +108,9 @@ new Date(jetId.timed.parse(timedId)).toISOString();
 // '2015-06-03T00:00:00.000Z'
 ```
 
-## `jetIdBig`
+<p align="center">· · ·</p>
+
+## jetIdBig
 
 Generates timestamped, monotonic IDs: each ID sorts strictly after the previous one, including within a single millisecond. IDs are 44 characters long, with 40 Crockford base32 characters grouped as `9-6-8-8-9`.
 
@@ -179,7 +187,9 @@ Time comes from `performance.timeOrigin + performance.now()` instead of `Date.no
 
 </details>
 
-## `jetKey`
+<p align="center">· · ·</p>
+
+## jetKey
 
 Generates a 52-character Crockford base32 string with no dashes, suitable for secrets such as API keys or symmetric encryption keys. All 52 characters come from the platform's cryptographically secure random source.
 
@@ -207,6 +217,8 @@ Each Crockford base32 character carries 5 bits. Fifty-one characters provide 255
 In practice, `jetKey()` draws 260 random bits.
 
 </details>
+
+<p align="center">· · ·</p>
 
 ## Command line
 
@@ -240,6 +252,8 @@ jet-id --type=key     # One 52-character secret key.
 
 **Required value:** If you supply `--type` or `-t`, you must provide a value. Supplying the flag alone produces an error.
 
+<p align="center">· · ·</p>
+
 ## Benchmarks
 
 **Environment:** Node v24.13.0 · V8 13.6.233.17-node.37 · darwin/arm64 · Apple M4 Pro
@@ -259,6 +273,7 @@ jet-id --type=key     # One 52-character secret key.
 | ulid (monotonic) | 26 | 80 | 3,637,167 | 274.9 | 0.05x |
 | ulid() | 26 | 80 | 108,505 | 9216.2 | 0.00x |
 
+<p align="center">· · ·</p>
 
 ## License
 
