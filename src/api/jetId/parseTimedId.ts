@@ -1,5 +1,7 @@
-import { SEGMENT_1_LENGTH } from './_common';
-import validateId, { CHAR_VALUES } from './validateId';
+import { CHAR_VALUES } from '../_common/alphabet';
+
+import { SEGMENT_1_LENGTH } from './_internal';
+import validateId from './validateId';
 
 // ========================================================================= //
 //                                 FUNCTIONS                                 //
@@ -8,14 +10,12 @@ import validateId, { CHAR_VALUES } from './validateId';
 /**
  * Extracts the Unix epoch timestamp in milliseconds from a timed ID.
  *
- * Accepts uppercase and lowercase alike. `validateId` has already checked
- * every character and dash position, so this only reads the timestamp.
- *
+ * Accepts uppercase and lowercase alike, and any value at all: anything
+ * that fails `validateId` throws, so callers with untyped input need no
+ * cast.
  */
-function parseTimedId(id: string): number {
-  if (!validateId(id)) {
-    throw new TypeError('Invalid timed ID.');
-  }
+function parseTimedId(id: unknown): number {
+  if (!validateId(id)) throw new TypeError('Invalid timed ID.');
   // Arithmetic preserves the full 45-bit timestamp.
   // Bitwise operations would truncate it to 32 bits.
   let epoch = 0;

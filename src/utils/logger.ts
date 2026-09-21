@@ -10,27 +10,24 @@ export type AnyFn = (...args: any[]) => any;
 // ========================================================================= //
 
 /**
- * Print info. Return content
+ * Print info.
  */
-function info(...args: unknown[]): string {
+function info(...args: unknown[]): void {
   callConsoleFn(args, 'info');
-  return args.join(' ');
 }
 
 /**
- * Print error
+ * Print error.
  */
-function error(...args: unknown[]): string {
+function error(...args: unknown[]): void {
   callConsoleFn(args, 'error');
-  return args.join(' ');
 }
 
 /**
- * Print error
+ * Print a warning.
  */
-function warn(...args: unknown[]): string {
+function warn(...args: unknown[]): void {
   callConsoleFn(args, 'warn');
-  return args.join(' ');
 }
 
 // ============================= Shared Helpers ============================ //

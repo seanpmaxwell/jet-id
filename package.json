@@ -1,6 +1,6 @@
 {
   "name": "jet-id",
-  "version": "1.0.5",
+  "version": "1.2.0",
   "publishConfig": {
     "access": "public"
   },
@@ -35,11 +35,11 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "readme:swap": "mv README.md ./assets/README.tmp.md && mv ./assets/README-npm.md README.md",
-    "readme:restore": "mv README.md ./assets/README-npm.md && mv ./assets/README.tmp.md README.md",
-    "prepublishOnly": "npm run build && tsc && npm run lint && npm run format:check && npm test && npm run readme:swap",
+    "readme:swap": "tsx scripts/readme.ts swap",
+    "readme:restore": "tsx scripts/readme.ts restore",
+    "prepublishOnly": "npm run build && tsc && npm run lint && npm run format:check && npm test && npm run test:browser",
     "postpack": "npm run readme:restore",
-    "npm-data": "npm run build && npm pack --dry-run --json --ignore-scripts",
+    "npm-data": "npm run build && npm pack --dry-run --json",
     "start": "node lib/cli.js",
     "start:build": "npm run build && npm run start --",
     "test": "vitest run",
@@ -47,7 +47,8 @@
     "test:browser": "vitest run --config vitest.browser.config.ts",
     "typecheck": "tsc",
     "dev:commit": "npm run format && git add -A && git commit -m \"dev commit\"",
-    "dev:commit:push": "npm run dev:commit && git push"
+    "dev:commit:push": "npm run dev:commit && git push",
+    "prepack": "npm run readme:swap"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -93,9 +94,8 @@
     "base32",
     "sortable-id",
     "sortable",
+    "monotonic",
     "timestamp",
-    "typed-id",
-    "tagged-id",
     "collision-resistant",
     "primary-key",
     "database-id",

@@ -2,19 +2,34 @@ import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import generateId from '@src/api/generateId';
-import generateKey from '@src/api/generateKey';
-import generateTimedId from '@src/api/generateTimedId';
-import logger from '@src/utils/logger';
+import generateKey from '@src/api/helpers/generateKey';
+import jetIdBig from '@src/api/helpers/jetIdBig/jetIdBig';
+import jetId from '@src/api/jetId/jetId';
 
 import cmdLineParser, { ParsedCmdLineArgs } from './_internal/cmdLineParser';
 import printHelpText from './_internal/printHelpText';
+
+// Injected by esbuild at build time (see scripts/build.ts), so the bundled
+// CLI answers `--version` without touching the filesystem. Absent when the
+// source runs directly under tsx, where `readVersion` takes over.
+declare const __JET_ID_VERSION__: string | undefined;
 
 // ========================================================================= //
 //                                 CONSTANTS                                 //
 // ========================================================================= //
 
 const PACKAGE_NAME = 'jet-id';
+
+// One generator per `--type` value. The plain random id is the default when
+// no type is given, so it is not in the table.
+const GENERATORS: Record<
+  NonNullable<ParsedCmdLineArgs['type']>,
+  () => string
+> = {
+  big: jetIdBig,
+  key: generateKey,
+  timed: jetId.timed,
+};
 
 // ========================================================================= //
 //                                   INIT                                    //
@@ -25,7 +40,7 @@ const PACKAGE_NAME = 'jet-id';
  */
 async function cli(args: string[]): Promise<unknown> {
   // ---- Parse the command-line arguments
-  const pArgs = await cmdLineParser(args);
+  const pArgs = cmdLineParser(args);
 
   // ---- `help/version`
   if (pArgs.help || pArgs.version) {
@@ -34,11 +49,7 @@ async function cli(args: string[]): Promise<unknown> {
         'Invalid command-line arguments. Please use the "-h" flag for assistance',
       );
     if (pArgs.help) return printHelpText();
-    // Version
-    const thisFilePath = fileURLToPath(import.meta.url);
-    const thisFileDir = path.dirname(thisFilePath);
-    const version = await readVersion(thisFileDir);
-    return process.stdout.write(`${version}\n`);
+    return printVersion();
   }
 
   // ---- Print the IDs
@@ -60,23 +71,11 @@ async function cli(args: string[]): Promise<unknown> {
 function printIds(args: ParsedCmdLineArgs): void {
   const { count } = args;
   let batch = '';
-  if (args.timed && args.key) {
-    logger.warn(
-      'WARNING: The --key and --timed options cannot be used together, defaulting to key',
-    );
-  }
   // Set the function to use
-  let genIdFn;
-  if (args.key) {
-    genIdFn = generateKey;
-  } else if (args.timed) {
-    genIdFn = generateTimedId;
-  } else {
-    genIdFn = generateId;
-  }
+  const generateFn = args.type === null ? jetId : GENERATORS[args.type];
   // Call it by the count number
   for (let i = 0; i < count; i++) {
-    batch += genIdFn() + '\n';
+    batch += generateFn() + '\n';
     if ((i & 1023) === 1023) {
       process.stdout.write(batch);
       batch = '';
@@ -89,15 +88,34 @@ function printIds(args: ParsedCmdLineArgs): void {
 }
 
 /**
- * Look at the package.json and return the version. Walks up from the
- * directory this file lives in, so it works both from the bundled `lib/cli.js`
- * (one level down) and from `src/cli/cli.ts` (two levels down).
+ * Check if the version is inlined. If not, use package.json.
  *
  * Used by: {@link cli}
  *
  * @private
  */
-async function readVersion(startDir: string): Promise<string> {
+async function printVersion(): Promise<boolean> {
+  let version;
+  if (typeof __JET_ID_VERSION__ === 'string') {
+    version = __JET_ID_VERSION__;
+  } else {
+    const thisFilePath = fileURLToPath(import.meta.url);
+    const thisFileDir = path.dirname(thisFilePath);
+    version = await loadVersionFromPkgJson(thisFileDir);
+  }
+  return process.stdout.write(`${version}\n`);
+}
+
+/**
+ * Look at the package.json and return the version. Only reached when the
+ * source runs unbundled (the build inlines `__JET_ID_VERSION__` instead).
+ * Walks up from the directory this file lives in.
+ *
+ * Used by: {@link printVersion}
+ *
+ * @private
+ */
+async function loadVersionFromPkgJson(startDir: string): Promise<string> {
   let dir = startDir;
   while (true) {
     const filePath = path.join(dir, 'package.json');

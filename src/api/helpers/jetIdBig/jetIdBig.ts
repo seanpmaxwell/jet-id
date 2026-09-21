@@ -1,33 +1,35 @@
-import generateId from './generateId';
-import generateKey from './generateKey';
-import generateTimedId from './generateTimedId';
-import parseTimedId from './parseTimedId';
-import validateId from './validateId';
+import generateMonotonicBigId from './generateMonotonicBigId';
+import parseMonotonicBigId from './parseMonotonicBigId';
+import validateMonotonicBigId from './validateMonotonicBigId';
 
 // ========================================================================= //
 //                                   TYPES                                   //
 // ========================================================================= //
 
-interface jetId {
+interface jetIdBig {
   (): string;
   test(id: unknown): boolean;
-  timed(epoch?: number): string;
-  parseTimed(id: string): number;
-  key(): string;
+  // Written out here rather than as `typeof parseMonotonicBigId`, so the
+  // bundled .d.ts carries no internal function name. The parser declares
+  // the same shape; if the two ever drift, the assignment below fails to
+  // typecheck.
+  parse(id: unknown): {
+    epoch: number;
+    fraction: number;
+    counter: number;
+  };
 }
 
 // ========================================================================= //
 //                                   INIT                                    //
 // ========================================================================= //
 
-const jetId = generateId as jetId;
-jetId.test = validateId;
-jetId.timed = generateTimedId;
-jetId.parseTimed = parseTimedId;
-jetId.key = generateKey;
+const jetIdBig = generateMonotonicBigId as jetIdBig;
+jetIdBig.test = validateMonotonicBigId;
+jetIdBig.parse = parseMonotonicBigId;
 
 // ========================================================================= //
 //                                  EXPORT                                   //
 // ========================================================================= //
 
-export default jetId;
+export default jetIdBig;

@@ -3,7 +3,7 @@
 // ========================================================================= //
 
 const HELP_TEXT = `
-  jet-id - generate random or timestamped unique ids
+  jet-id - generate random, timestamped, or ordered unique ids
 
   Usage:
     jet-id [options]
@@ -12,14 +12,20 @@ const HELP_TEXT = `
     -h, --help          Show this help. Must be the only argument.
     -v, --version       Show the version. Must be the only argument.
     -c, --count <n>     How many ids to print (default: 1).
-    -t, --timed         Encode the current epoch in the first 9 characters,
-                        so the ids sort by creation time.
+    -t, --type <type>   Which kind of id to print. One of:
+                          timed   28 characters, sorts by creation time
+                          big     44 characters, also ordered within a
+                                  single millisecond
+                          key     52 characters, no dashes, for secrets
+                        If omitted, a plain random 28-character id is used.
+                        The value is required and is case-insensitive.
 
   Examples:
-    jet-id              One random id
-    jet-id -c 10        Ten random ids, one per line
-    jet-id -t           One timestamped id
-    jet-id -t -c 10     Ten timestamped ids`;
+    jet-id                    One random id
+    jet-id -c 10              Ten random ids, one per line
+    jet-id -t timed           One timestamped id
+    jet-id -t big -c 10       Ten ids in strictly increasing order
+    jet-id --type=key         One 52-character key`;
 
 // ========================================================================= //
 //                                 FUNCTIONS                                 //

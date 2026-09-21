@@ -1,16 +1,16 @@
 import { describe, expect, it, vi } from 'vitest';
 
+import { ID_LENGTH } from '@test/_common/constants';
+
 // ========================================================================= //
 //                                 CONSTANTS                                 //
 // ========================================================================= //
 
-// Mirrors `generateId.ts`. A chunk is one pool string, and one CSPRNG draw fills
-// CHUNKS of them, so ids are handed out across two nested boundaries.
+// A chunk is one pool string, and one CSPRNG draw fills CHUNKS of them, so
+// ids are handed out across two nested boundaries.
 const CHUNK_IDS = 256;
 const CHUNKS = 4;
 const DRAW_IDS = CHUNK_IDS * CHUNKS; // 1024
-
-const ID_LENGTH = 28;
 
 // Counts that land on, just before and just after each boundary.
 const COUNTS = [
@@ -22,7 +22,7 @@ const COUNTS = [
   DRAW_IDS,
   DRAW_IDS + 1,
   2 * DRAW_IDS,
-];
+] as const;
 
 // ========================================================================= //
 //                                 FUNCTIONS                                 //
@@ -54,7 +54,8 @@ describe('pool boundary', () => {
     expect(ids.size).toBe(count);
     for (const id of ids) {
       expect(id).toHaveLength(ID_LENGTH);
-      expect(jetId.test(id)).toBe(true);
+      const res = jetId.test(id);
+      expect(res).toBe(true);
     }
   });
 
@@ -68,8 +69,10 @@ describe('pool boundary', () => {
     const before = jetId(); // last of chunk 0
     const after = jetId(); // first of chunk 1
 
-    expect(jetId.test(before)).toBe(true);
-    expect(jetId.test(after)).toBe(true);
+    const beforeRes = jetId.test(before);
+    const afterRes = jetId.test(after);
+    expect(beforeRes).toBe(true);
+    expect(afterRes).toBe(true);
     expect(before).not.toBe(after);
   });
 

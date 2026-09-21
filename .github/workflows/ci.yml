@@ -43,8 +43,9 @@ jobs:
       - run: npm run lint
       - run: npm run format:check
       - run: npm run build
-      # Node tests only: `npm test` also runs the browser suite, which has its
-      # own job below.
+      # `npm test` is the node suite only; the browser suite has its own job
+      # below, since it is the one path that reaches TextDecoder and
+      # performance.timeOrigin.
       - run: npm run test:node
 
   browser:

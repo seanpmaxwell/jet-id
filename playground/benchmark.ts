@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import logger from '@src/utils/logger';
 import onInit from '@src/utils/onInit';
 
-import jetId from '../src';
+import jetId, { jetIdBig } from '../src';
 
 // ========================================================================= //
 //                                 CONSTANTS                                 //
@@ -59,6 +59,12 @@ onInit.sync(() => {
       bits: 125,
     },
     {
+      name: 'jetIdBig',
+      generate: () => jetIdBig(),
+      chars: 44,
+      bits: 125,
+    },
+    {
       name: 'uuid v4()',
       generate: () => uuidv4(),
       chars: 36,
@@ -84,6 +90,7 @@ onInit.sync(() => {
     for (let position = 0; position < cases.length; position++) {
       const entry = cases[(round + position) % cases.length];
       entry.samples.push(measure(entry.generate, SAMPLE_MS));
+      // logger.info('Round', round, 'completed ~', entry.name);
     }
   }
 

@@ -2,15 +2,13 @@ import { describe, expect, it } from 'vitest';
 
 import jetId from '@src/index';
 
+import { ALPHABET, DASH_INDICES, ID_LENGTH } from '@test/_common/constants';
+
 // ========================================================================= //
 //                                 CONSTANTS                                 //
 // ========================================================================= //
 
-const ALPHABET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
 const DASH = '-'.charCodeAt(0);
-const ID_LENGTH = 28;
-const DASH_INDICES = [9, 15, 21];
-
 const SAMPLES = 2_000_000;
 
 // Chi-square over 32 symbols has 31 degrees of freedom. 121.9 is the p = 1e-12

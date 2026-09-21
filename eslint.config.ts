@@ -25,6 +25,7 @@ export default [
       },
     },
     rules: {
+      eqeqeq: 'error',
       'no-unused-vars': 'off',
       'no-console': 'warn',
       '@typescript-eslint/no-extraneous-class': 'error',
