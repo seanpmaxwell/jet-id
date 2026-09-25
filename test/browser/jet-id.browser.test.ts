@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import jetId from '@src/index';
+import jetid from '@src/index';
 
 // ========================================================================= //
 //                                   TESTS                                   //
@@ -28,37 +28,37 @@ describe('browser environment', () => {
   });
 });
 
-// ---- `default jetId`
-describe('jetId() in the browser', () => {
+// ---- `default jetid`
+describe('jetid() in the browser', () => {
   it('returns a string of 28 characters', () => {
-    const id = jetId();
+    const id = jetid();
     expect(typeof id).toBe('string');
     expect(id).toHaveLength(28);
   });
 
   it('uses the 9-5-5-6 dash layout', () => {
-    const segments = jetId().split('-');
+    const segments = jetid().split('-');
     expect(segments.map((segment) => segment.length)).toEqual([9, 5, 5, 6]);
   });
 
   it('only uses Crockford base32 characters', () => {
     for (let i = 0; i < 1_000; i++) {
-      expect(jetId.test(jetId())).toBe(true);
+      expect(jetid.test(jetid())).toBe(true);
     }
   });
 
   it('generates unique ids across multiple pool refills', () => {
     const ids = new Set<string>();
     for (let i = 0; i < 10_000; i++) {
-      ids.add(jetId());
+      ids.add(jetid());
     }
     expect(ids.size).toBe(10_000);
   });
 });
 
-// ---- `jetId.mono`
-describe('jetId.mono() in the browser', () => {
-  // `jetIdMono` keeps its own pool with its own decode branch, and is the only
+// ---- `jetid.mono`
+describe('jetid.mono() in the browser', () => {
+  // `jetidMono` keeps its own pool with its own decode branch, and is the only
   // part of the API that needs `performance.timeOrigin`. Both of those are
   // what differ between Node and a browser, so they are checked here for real
   // rather than by stubbing `Buffer` away in a Node test.
@@ -68,7 +68,7 @@ describe('jetId.mono() in the browser', () => {
   });
 
   it('returns a valid id in the 9-6-8-8-9 layout', () => {
-    const id = jetId.mono();
+    const id = jetid.mono();
     expect(id).toHaveLength(44);
     expect(id.split('-').map((segment) => segment.length)).toEqual([
       9, 6, 8, 8, 9,
@@ -79,7 +79,7 @@ describe('jetId.mono() in the browser', () => {
   it('returns ids that sort in generation order across pool refills', () => {
     const ids: string[] = [];
     for (let i = 0; i < 10_000; i++) {
-      ids.push(jetId.mono());
+      ids.push(jetid.mono());
     }
     expect([...ids].sort()).toEqual(ids);
     expect(new Set(ids).size).toBe(10_000);

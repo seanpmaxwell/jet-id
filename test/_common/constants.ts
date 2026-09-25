@@ -8,12 +8,12 @@
 // ---- Alphabet
 export const ALPHABET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
 
-// ---- `jetId`, the 9-5-5-6 format
+// ---- `jetid`, the 9-5-5-6 format
 export const ID_LENGTH = 28;
 export const DASH_INDICES = [9, 15, 21];
 export const VALID_DUMMY_ID = '0123456AB-CDEFG-HJKMN-PQRSTV';
 
-// ---- `jetIdMono`, the 9-6-8-8-9 format
+// ---- `jetidMono`, the 9-6-8-8-9 format
 export const MONO_ID_LENGTH = 44;
 export const MONO_DASH_INDICES = [9, 16, 25, 34];
 export const VALID_DUMMY_MONO_ID =

@@ -3,34 +3,34 @@ import generateTimedId from './generateTimedId';
 import parseTimedId from './parseTimedId';
 import validateId from './validateId';
 
-import jetIdMono from './jetIdMono/api';
+import jetidMono from './jetid-mono/api';
 
 // ========================================================================= //
 //                                   TYPES                                   //
 // ========================================================================= //
 
-interface jetId {
+interface jetid {
   (): string;
   test(id: unknown): boolean;
   timed: {
     (epoch?: number): string;
     parse(id: unknown): number;
   };
-  mono: jetIdMono;
+  mono: jetidMono;
 }
 
 // ========================================================================= //
-//                                   INIT                                    //
+//                                   EXEC                                    //
 // ========================================================================= //
 
-const jetId = generateId as jetId;
-jetId.timed = generateTimedId as jetId['timed'];
-jetId.timed.parse = parseTimedId;
-jetId.test = validateId;
-jetId.mono = jetIdMono;
+const jetid = generateId as jetid;
+jetid.timed = generateTimedId as jetid['timed'];
+jetid.timed.parse = parseTimedId;
+jetid.test = validateId;
+jetid.mono = jetidMono;
 
 // ========================================================================= //
 //                                  EXPORT                                   //
 // ========================================================================= //
 
-export default jetId;
+export default jetid;

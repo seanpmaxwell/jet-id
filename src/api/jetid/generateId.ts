@@ -39,7 +39,7 @@ const DASH_BYTE_1 = DASH_CODE << 8; // Second byte (ID positions 9 and 21).
 const DASH_BYTE_3 = DASH_CODE << 24; // Fourth byte (ID position 15).
 
 // ========================================================================= //
-//                                   INIT                                    //
+//                                   EXEC                                    //
 // ========================================================================= //
 
 // ---- Character pool

@@ -34,7 +34,7 @@ export const FRACTION_INDEX = DASH_1_INDEX + 1; // 10
 export const COUNTER_INDEX = FRACTION_INDEX + FRACTION_CHARS; // 12
 
 // ========================================================================= //
-//                                   INIT                                    //
+//                                   EXEC                                    //
 // ========================================================================= //
 
 // ---- Expected layout

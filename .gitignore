@@ -148,4 +148,6 @@ archive
 **/*.tmp/**
 
 lib
-workflows
+
+# Local tools symlink; keep .github/workflows visible to Git.
+/workflows

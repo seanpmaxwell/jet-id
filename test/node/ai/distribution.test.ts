@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import jetId from '@src/index';
+import jetid from '@src/index';
 
 import { ALPHABET, DASH_INDICES, ID_LENGTH } from '@test/_common/constants';
 
@@ -40,7 +40,7 @@ describe('character distribution', () => {
   }
 
   for (let n = 0; n < SAMPLES; n++) {
-    const id = jetId();
+    const id = jetid();
     if (id.length !== ID_LENGTH && wrongLength < 0) {
       wrongLength = n;
     }

@@ -6,7 +6,7 @@ import validateMonoId from './validateMonoId';
 //                                   TYPES                                   //
 // ========================================================================= //
 
-interface jetIdMono {
+interface jetidMono {
   (): string;
   test(id: unknown): boolean;
   parse(id: unknown): {
@@ -17,15 +17,15 @@ interface jetIdMono {
 }
 
 // ========================================================================= //
-//                                   INIT                                    //
+//                                   EXEC                                    //
 // ========================================================================= //
 
-const jetIdMono = generateMonoId as jetIdMono;
-jetIdMono.test = validateMonoId;
-jetIdMono.parse = parseMonoId;
+const jetidMono = generateMonoId as jetidMono;
+jetidMono.test = validateMonoId;
+jetidMono.parse = parseMonoId;
 
 // ========================================================================= //
 //                                  EXPORT                                   //
 // ========================================================================= //
 
-export default jetIdMono;
+export default jetidMono;

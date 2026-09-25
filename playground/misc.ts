@@ -1,23 +1,23 @@
-import jetId, { jetKey } from '@src/index';
+import jetid from '@src/index';
 import logger from '@src/utils/logger';
 import onInit from '@src/utils/onInit';
 
 // ========================================================================= //
-//                                   INIT                                    //
+//                                   EXEC                                    //
 // ========================================================================= //
 
 // ---- Wrap printing the id and parse result
 onInit.skip(() => {
   for (let i = 0; i < 1000; i++) {
-    logger.info(jetId());
+    logger.info(jetid());
   }
 }, 'playground_default');
 
 // ---- Wrap printing the id and parse result
 onInit.skip(() => {
   for (let i = 0; i < 100; i++) {
-    const id = jetId.timed();
-    const parsedId = jetId.timed.parse(id);
+    const id = jetid.timed();
+    const parsedId = jetid.timed.parse(id);
     const dateStr = new Date(parsedId).toLocaleString();
     logger.info(dateStr);
   }
@@ -26,24 +26,17 @@ onInit.skip(() => {
 // ---- Test optional timing
 onInit.skip(() => {
   const date = new Date(2015, 5, 3);
-  const timedId = jetId.timed(date.getTime());
+  const timedId = jetid.timed(date.getTime());
   logger.info(timedId);
 
-  const parsedId = jetId.timed.parse(timedId);
+  const parsedId = jetid.timed.parse(timedId);
   const dateStr = new Date(parsedId).toLocaleString();
   logger.info(dateStr);
 }, 'playground__timed-optional');
 
-// ---- Test key
-onInit.skip(() => {
-  for (let i = 0; i < 1000; i++) {
-    logger.info(jetKey());
-  }
-}, 'playground__key');
-
 // ---- Test monotonic
 onInit.sync(() => {
   for (let i = 0; i < 100_000; i++) {
-    logger.info(jetId.mono());
+    logger.info(jetid.mono());
   }
 }, 'playground__big');

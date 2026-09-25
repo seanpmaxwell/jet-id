@@ -13,9 +13,9 @@ npm install jet-id
 ```
 
 ```ts
-import jetId from 'jet-id';
+import jetid from 'jet-id';
 
-jetId(); // '9Q8SWWBTY-7NVXM-FT9S6-XB4R3M'
+jetid(); // '9Q8SWWBTY-7NVXM-FT9S6-XB4R3M'
 ```
 
 A plain ID contains 25 random Crockford base32 characters, grouped as `9-5-5-6`. Including the three dashes, each ID is 28 characters long.
@@ -29,17 +29,15 @@ A plain ID contains 25 random Crockford base32 characters, grouped as `9-5-5-6`.
 - [Quick start](#quick-start)
 - [Why jet-id?](#why-jet-id)
 - [API](#api)
-- [jetId](#jetid)
-  - [`jetId()`](#jetid-1)
-  - [`jetId.test()`](#jetidtest)
-  - [`jetId.timed()`](#jetidtimed)
-  - [`jetId.timed.parse()`](#jetidtimedparse)
-- [jetId.mono](#jetidmono)
-  - [`jetId.mono()`](#jetidmono-1)
-  - [`jetId.mono.test()`](#jetidmonotest)
-  - [`jetId.mono.parse()`](#jetidmonoparse)
-- [jetKey](#jetkey)
-  - [`jetKey()`](#jetkey-1)
+- [jetid](#jetid)
+  - [`jetid()`](#jetid-1)
+  - [`jetid.test()`](#jetidtest)
+  - [`jetid.timed()`](#jetidtimed)
+  - [`jetid.timed.parse()`](#jetidtimedparse)
+- [jetid.mono](#jetidmono)
+  - [`jetid.mono()`](#jetidmono-1)
+  - [`jetid.mono.test()`](#jetidmonotest)
+  - [`jetid.mono.parse()`](#jetidmonoparse)
 - [Command line](#command-line)
   - [Options](#options)
   - [Generator types](#generator-types)
@@ -56,8 +54,8 @@ A plain ID contains 25 random Crockford base32 characters, grouped as `9-5-5-6`.
 - **Small:** 6.9 kB packed, with zero runtime dependencies.
 - **TypeScript-ready:** Includes type declarations.
 - **Portable:** Works in Node.js and modern browsers.
-- **Flexible:** Choose random IDs, timestamped IDs, strictly ordered IDs, or secret keys.
-- **Strong randomness:** `jetId()` and `jetId.mono()` provide 125 random bits. For comparison, UUID v4 has 122.
+- **Flexible:** Choose random IDs, timestamped IDs, or strictly ordered IDs.
+- **Strong randomness:** `jetid()` and `jetid.mono()` provide 125 random bits. For comparison, UUID v4 has 122.
 - **Simple API:** Generate IDs, validate their format, and extract encoded timestamps with a few functions.
 
 <p align="center">· · ·</p>
@@ -66,130 +64,129 @@ A plain ID contains 25 random Crockford base32 characters, grouped as `9-5-5-6`.
 
 | Generator | Purpose | Length |
 |---|---|---:|
-| `jetId()` | Random IDs | 28 |
-| `jetId.timed()` | IDs sortable by encoded timestamp | 28 |
-| `jetId.mono()` | Strictly ordered IDs within one process | 44 |
-| `jetKey()` | Random secrets | 52 |
+| `jetid()` | Random IDs | 28 |
+| `jetid.timed()` | IDs sortable by encoded timestamp | 28 |
+| `jetid.mono()` | Strictly ordered IDs within one process | 44 |
 
-> `jetId()` and `jetId.timed()` share the same 28-character format. Use `jetId.test()` to validate either, and `jetId.timed.parse()` to extract the timestamp from a timestamped ID.
+> `jetid()` and `jetid.timed()` share the same 28-character format. Use `jetid.test()` to validate either, and `jetid.timed.parse()` to extract the timestamp from a timestamped ID.
 
-> `jetId.mono()` and `jetKey()` use different formats. Access `jetId.mono()` through the default `jetId` export; `jetKey` is a named export.
+> `jetid.mono()` uses a different format. Access it through the default `jetid` export.
 
 <p align="center">· · ·</p>
 
-## jetId
+## jetid
 
 The default export generates random IDs and provides helpers for validation, timestamping, and monotonic IDs.
 
-#### `jetId()`
+#### `jetid()`
 
 Generates a random 28-character ID. No options are required.
 
 ```ts
-import jetId from 'jet-id';
+import jetid from 'jet-id';
 
-jetId(); // '9Q8SWWBTY-7NVXM-FT9S6-XB4R3M'
+jetid(); // '9Q8SWWBTY-7NVXM-FT9S6-XB4R3M'
 ```
 
-#### `jetId.test()`
+#### `jetid.test()`
 
 Checks whether a value is a well-formed ID string. Accepts any value and returns `false` if the format is invalid. Validation is case-insensitive.
 
 ```ts
 const someId = 'avz6yg1rb-47j6r-xgns9-tqw29a';
 
-jetId.test(someId); // true
-jetId.test('not-an-id'); // false
-jetId.test(null); // false
+jetid.test(someId); // true
+jetid.test('not-an-id'); // false
+jetid.test(null); // false
 ```
 
-#### `jetId.timed()`
+#### `jetid.timed()`
 
-**Signature:** `jetId.timed(epoch?: number): string`
+**Signature:** `jetid.timed(epoch?: number): string`
 
 Encodes a timestamp in the first nine characters, so IDs sort by creation time under plain string comparison. Those nine characters leave 80 random bits instead of 125. Pass a timestamp in milliseconds, or omit it to use `Date.now()`.
 
 <details>
 <summary>.timed vs .mono</summary>
 
-- **You choose the timestamp.** `jetId.mono()` always reads its own clock, so it cannot produce an ID for a record created last year. `jetId.timed(epoch)` can, which is what backfills, data imports, and deterministic tests need.
-- **Same layout as a plain ID.** A timed ID is still 28 characters in the same 9-5-5-6 shape, so plain and timestamped IDs share a column and a validator. `jetId.mono()` is a separate 44-character format.
-- **Wall-clock time.** It uses `Date.now()`, which follows system clock corrections, so the value means "when this was created." `jetId.mono()` uses `performance.now()`, which deliberately does not, because its job is ordering rather than timekeeping.
+- **You choose the timestamp.** `jetid.mono()` always reads its own clock, so it cannot produce an ID for a record created last year. `jetid.timed(epoch)` can, which is what backfills, data imports, and deterministic tests need.
+- **Same layout as a plain ID.** A timed ID is still 28 characters in the same 9-5-5-6 shape, so plain and timestamped IDs share a column and a validator. `jetid.mono()` is a separate 44-character format.
+- **Wall-clock time.** It uses `Date.now()`, which follows system clock corrections, so the value means "when this was created." `jetid.mono()` uses `performance.now()`, which deliberately does not, because its job is ordering rather than timekeeping.
 
 </details>
 
 ```ts
 // Use the current time.
-jetId.timed(); // '1KKNTQ2CN-606ZG-8VF48-76B6F3'
+jetid.timed(); // '1KKNTQ2CN-606ZG-8VF48-76B6F3'
 
 // Use a custom timestamp.
 const date = new Date(2015, 5, 3);
-const timedId = jetId.timed(date.getTime());
+const timedId = jetid.timed(date.getTime());
 ```
 
-> IDs with the same timestamp are not strictly ordered. Use `jetId.mono()` when you also need ordering within a single millisecond.
+> IDs with the same timestamp are not strictly ordered. Use `jetid.mono()` when you also need ordering within a single millisecond.
 
-#### `jetId.timed.parse()`
+#### `jetid.timed.parse()`
 
-**Signature:** `jetId.timed.parse(id: unknown): number`
+**Signature:** `jetid.timed.parse(id: unknown): number`
 
-Extracts the epoch timestamp, in milliseconds, from a timestamped ID. Uses the same case-insensitive format validation as `jetId.test()`.
+Extracts the epoch timestamp, in milliseconds, from a timestamped ID. Uses the same case-insensitive format validation as `jetid.test()`.
 
 ```ts
 const epoch = Date.UTC(2015, 5, 3);
-const timedId = jetId.timed(epoch);
+const timedId = jetid.timed(epoch);
 
-jetId.timed.parse(timedId); // 1433289600000
+jetid.timed.parse(timedId); // 1433289600000
 
-new Date(jetId.timed.parse(timedId)).toISOString();
+new Date(jetid.timed.parse(timedId)).toISOString();
 // '2015-06-03T00:00:00.000Z'
 ```
 
 <p align="center">· · ·</p>
 
-## jetId.mono
+## jetid.mono
 
 Generates timestamped, monotonic IDs: each ID sorts strictly after the previous one, including within a single millisecond. IDs are 44 characters long, with 40 Crockford base32 characters grouped as `9-6-8-8-9`.
 
-#### `jetId.mono()`
+#### `jetid.mono()`
 
 Generates the next ID.
 
 ```ts
-import jetId from 'jet-id';
+import jetid from 'jet-id';
 
-jetId.mono(); // '1M308A0DM-PR0000-422PKHWX-THHP6B3G-DPQCJ4GCE'
-jetId.mono(); // '1M308A0DM-WR0000-1ZS1A6M5-NE6RKRHN-X9F480HCB'
-jetId.mono(); // '1M308A0DM-X50000-XJ1ZENAH-MVX225N0-MZ0BTD8YB'
+jetid.mono(); // '1M308A0DM-PR0000-422PKHWX-THHP6B3G-DPQCJ4GCE'
+jetid.mono(); // '1M308A0DM-WR0000-1ZS1A6M5-NE6RKRHN-X9F480HCB'
+jetid.mono(); // '1M308A0DM-X50000-XJ1ZENAH-MVX225N0-MZ0BTD8YB'
 ```
 
-#### `jetId.mono.test()`
+#### `jetid.mono.test()`
 
-Checks whether a value is a well-formed `jetId.mono` string. Like `jetId.test()`, it accepts any value and ignores case.
+Checks whether a value is a well-formed `jetid.mono` string. Like `jetid.test()`, it accepts any value and ignores case.
 
 ```ts
 const someId = '1m308a0dm-pr0000-422pkhwx-thhp6b3g-dpqcj4gce';
 
-jetId.mono.test(someId); // true
-jetId.mono.test('not-an-id'); // false
+jetid.mono.test(someId); // true
+jetid.mono.test('not-an-id'); // false
 ```
 
-#### `jetId.mono.parse()`
+#### `jetid.mono.parse()`
 
-**Signature:** `jetId.mono.parse(id: unknown): { epoch: number; fraction: number; counter: number }`
+**Signature:** `jetid.mono.parse(id: unknown): { epoch: number; fraction: number; counter: number }`
 
-Extracts the three encoded ordering fields. Parsing is case-insensitive. An ID that fails `jetId.mono.test()` throws a `TypeError`.
+Extracts the three encoded ordering fields. Parsing is case-insensitive. An ID that fails `jetid.mono.test()` throws a `TypeError`.
 
 ```ts
 const someId = '1M30BVB0S-NW0000-B7GWMH34-1XZCBK38-AMHB4D0DW';
 
-jetId.mono.parse(someId);
+jetid.mono.parse(someId);
 // { epoch: 1789940050969, fraction: 700, counter: 0 }
 
-const date = new Date(jetId.mono.parse(someId).epoch);
+const date = new Date(jetid.mono.parse(someId).epoch);
 ```
 
-The fields returned by `jetId.mono.parse()`:
+The fields returned by `jetid.mono.parse()`:
 
 | Field | Meaning |
 |---|---|
@@ -205,11 +202,11 @@ The fields returned by `jetId.mono.parse()`:
 > Ordering is guaranteed within one process only. IDs generated by separate processes, workers, or machines are not ordered against each other.
 
 <details>
-<summary>Why is jetId.mono longer?</summary>
+<summary>Why is jetid.mono longer?</summary>
 
-Fifteen characters encode ordering information. With the 25-character payload used by `jetId()`, that would leave only 10 characters for randomness.
+Fifteen characters encode ordering information. With the 25-character payload used by `jetid()`, that would leave only 10 characters for randomness.
 
-Using 40 Crockford base32 characters leaves a 25-character random tail, preserving the full 125 random bits of a plain `jetId()`.
+Using 40 Crockford base32 characters leaves a 25-character random tail, preserving the full 125 random bits of a plain `jetid()`.
 
 The four dashes bring the total length to 44 characters.
 
@@ -218,40 +215,9 @@ The four dashes bring the total length to 44 characters.
 <details>
 <summary>Why is there no epoch option?</summary>
 
-`jetId.mono()` maintains ordering against the time it reads itself rather than accepting caller-supplied timestamps.
+`jetid.mono()` maintains ordering against the time it reads itself rather than accepting caller-supplied timestamps.
 
 Time comes from `performance.timeOrigin + performance.now()` instead of `Date.now()`. This provides sub-millisecond resolution and does not jump when the system clock is adjusted.
-
-</details>
-
-<p align="center">· · ·</p>
-
-## jetKey
-
-Generates a 52-character Crockford base32 string with no dashes, suitable for secrets such as API keys or symmetric encryption keys. All 52 characters come from the platform's cryptographically secure random source.
-
-#### `jetKey()`
-
-Returns a new key.
-
-```ts
-import { jetKey } from 'jet-id';
-
-jetKey(); // 'YFC75GX2KY5W183FRZA4XDVZ6PYDJPQT7JMNH3N7ZXPQ8FCW3M4G'
-```
-
-> Unique IDs are designed for collision resistance, not necessarily secrecy. Use `jetKey()` when generating a secret.
-
-> `jetKey` is a separate import outside of `jetId` because it isn't technically an **id** generator. But I wanted to include it, so it can take advantage of `jetId`'s extreme performance string generation logic. 
-
-<details>
-<summary>Why 52 characters?</summary>
-
-A common target for high-entropy keys is 256 bits.
-
-Each Crockford base32 character carries 5 bits. Fifty-one characters provide 255 bits, so 52 characters are the fewest needed to reach at least 256 bits.
-
-In practice, `jetKey()` draws 260 random bits.
 
 </details>
 
@@ -264,7 +230,6 @@ jet-id                # One random ID.
 jet-id -c 10          # Ten random IDs, one per line.
 jet-id -t timed       # One timestamped ID.
 jet-id -t mono -c 10  # Ten strictly increasing IDs.
-jet-id --type=key     # One 52-character secret key.
 ```
 
 ### Options
@@ -274,7 +239,7 @@ jet-id --type=key     # One 52-character secret key.
 | `--help` | `-h` | Show usage. Must be the only argument. |
 | `--version` | `-v` | Show the installed version. Must be the only argument. |
 | `--count <n>` | `-c` | Number of IDs to print. Defaults to `1`. |
-| `--type <type>` | `-t` | Generator to use: `timed`, `mono`, or `key`. Omit for plain random IDs. Values are case-insensitive. |
+| `--type <type>` | `-t` | Generator to use: `timed` or `mono`. Omit for plain random IDs. Values are case-insensitive. |
 
 ### Generator types
 
@@ -282,10 +247,9 @@ jet-id --type=key     # One 52-character secret key.
 
 | Type | Generator | Output | Length |
 |---|---|---|---:|
-| *(omitted)* | `jetId()` | Random ID | 28 |
-| `timed` | `jetId.timed()` | Timestamped ID | 28 |
-| `mono` | `jetId.mono()` | Strictly ordered ID | 44 |
-| `key` | `jetKey()` | Secret key without dashes | 52 |
+| *(omitted)* | `jetid()` | Random ID | 28 |
+| `timed` | `jetid.timed()` | Timestamped ID | 28 |
+| `mono` | `jetid.mono()` | Strictly ordered ID | 44 |
 
 **Required value:** If you supply `--type` or `-t`, you must provide a value. Supplying the flag alone produces an error.
 
@@ -299,12 +263,12 @@ jet-id --type=key     # One 52-character secret key.
 
 | Generator | Characters | Random bits | Median ops/sec | ns/ID | Relative throughput |
 |---|---:|---:|---:|---:|---:|
-| jetId() | 28 | 125 | 81,127,524 | 12.3 | 1.00x |
+| jetid() | 28 | 125 | 81,127,524 | 12.3 | 1.00x |
 | nanoid() | 21 | 126 | 51,207,047 | 19.5 | 0.65x |
 | Nano ID: Crockford, 25 chars | 25 | 125 | 45,876,959 | 21.8 | 0.58x |
-| jetId.timed() | 28 | 80 | 20,841,743 | 48.0 | 0.27x |
+| jetid.timed() | 28 | 80 | 20,841,743 | 48.0 | 0.27x |
 | Nano ID: Crockford, 9-5-5-6 | 28 | 125 | 15,110,576 | 66.2 | 0.19x |
-| jetId.mono() | 44 | 125 | 12,640,666 | 79.1 | 0.16x |
+| jetid.mono() | 44 | 125 | 12,640,666 | 79.1 | 0.16x |
 | crypto.randomUUID() | 36 | 122 | 9,295,197 | 107.6 | 0.12x |
 | uuid.v4() | 36 | 122 | 8,075,084 | 123.8 | 0.10x |
 | ulid (monotonic) | 26 | 80 | 3,637,167 | 274.9 | 0.05x |
