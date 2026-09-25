@@ -1,3 +1,5 @@
+import { Writable } from 'stream';
+
 // ========================================================================= //
 //                                 CONSTANTS                                 //
 // ========================================================================= //
@@ -34,8 +36,8 @@ const HELP_TEXT = `
 /**
  * Print the help text above to the command line
  */
-function printHelpText(): boolean {
-  return process.stdout.write(HELP_TEXT.trim() + '\n');
+function printHelpText(output: Writable): boolean {
+  return output.write(HELP_TEXT.trim() + '\n');
 }
 
 // ========================================================================= //

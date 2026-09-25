@@ -1,5 +1,7 @@
+import { once } from 'events';
 import fs from 'fs/promises';
 import path from 'path';
+import { Writable } from 'stream';
 import { fileURLToPath } from 'url';
 
 import generateKey from '@src/api/helpers/generateKey';
@@ -37,7 +39,10 @@ const GENERATORS: Record<
 /**
  * Run `jet-id` from the command line.
  */
-async function cli(args: string[]): Promise<unknown> {
+async function cli(
+  args: string[],
+  output: Writable = process.stdout,
+): Promise<unknown> {
   // ---- Parse the command-line arguments
   const pArgs = cmdLineParser(args);
 
@@ -47,12 +52,12 @@ async function cli(args: string[]): Promise<unknown> {
       throw new Error(
         'Invalid command-line arguments. Please use the "-h" flag for assistance',
       );
-    if (pArgs.help) return printHelpText();
-    return printVersion();
+    if (pArgs.help) return printHelpText(output);
+    return printVersion(output);
   }
 
   // ---- Print the IDs
-  return printIds(pArgs);
+  return printIds(pArgs, output);
 }
 
 // ========================================================================= //
@@ -67,7 +72,10 @@ async function cli(args: string[]): Promise<unknown> {
  *
  * @private
  */
-function printIds(args: ParsedCmdLineArgs): void {
+async function printIds(
+  args: ParsedCmdLineArgs,
+  output: Writable,
+): Promise<void> {
   const { count } = args;
   let batch = '';
   // Set the function to use
@@ -76,13 +84,15 @@ function printIds(args: ParsedCmdLineArgs): void {
   for (let i = 0; i < count; i++) {
     batch += generateFn() + '\n';
     if ((i & 1023) === 1023) {
-      process.stdout.write(batch);
+      if (!output.write(batch)) {
+        await once(output, 'drain');
+      }
       batch = '';
     }
   }
   // Print items.
-  if (batch !== '') {
-    process.stdout.write(batch);
+  if (batch !== '' && !output.write(batch)) {
+    await once(output, 'drain');
   }
 }
 
@@ -93,7 +103,7 @@ function printIds(args: ParsedCmdLineArgs): void {
  *
  * @private
  */
-async function printVersion(): Promise<boolean> {
+async function printVersion(output: Writable): Promise<boolean> {
   let version;
   if (typeof __JET_ID_VERSION__ === 'string') {
     version = __JET_ID_VERSION__;
@@ -102,7 +112,7 @@ async function printVersion(): Promise<boolean> {
     const thisFileDir = path.dirname(thisFilePath);
     version = await loadVersionFromPkgJson(thisFileDir);
   }
-  return process.stdout.write(`${version}\n`);
+  return output.write(`${version}\n`);
 }
 
 /**

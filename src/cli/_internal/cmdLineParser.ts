@@ -57,9 +57,9 @@ function cmdLineParser(args: string[]): ParsedCmdLineArgs {
   // Validate `count`. Without this, a non-numeric or zero count prints nothing
   // at all, which reads like the command silently did nothing.
   const count = pArgs.count === undefined ? 1 : Number(pArgs.count);
-  if (!Number.isInteger(count) || count < 1) {
+  if (!Number.isSafeInteger(count) || count < 1) {
     throw new Error(
-      `The --count flag must be a positive integer: received "${pArgs.count}"`,
+      `The --count flag must be a positive safe integer: received "${pArgs.count}"`,
     );
   }
 

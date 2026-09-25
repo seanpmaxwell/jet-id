@@ -107,6 +107,17 @@ describe('cmdLineParser', () => {
     }
   });
 
+  it('rejects counts outside the safe integer range', () => {
+    for (const value of ['9007199254740992', '9007199254740993', '1e100']) {
+      expect(() => cmdLineParser(['-c', value]), value).toThrow(
+        'positive safe integer',
+      );
+    }
+    expect(cmdLineParser(['-c', String(Number.MAX_SAFE_INTEGER)]).count).toBe(
+      Number.MAX_SAFE_INTEGER,
+    );
+  });
+
   it('rejects an unknown flag', () => {
     expect(() => cmdLineParser(['--nope'])).toThrow();
     expect(() => cmdLineParser(['-z'])).toThrow();
