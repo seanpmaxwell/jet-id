@@ -1,9 +1,9 @@
-import jetid, { jetKey } from '@src/index';
+import jetid from '@src/index';
 import logger from '@src/utils/logger';
 import onInit from '@src/utils/onInit';
 
 // ========================================================================= //
-//                                   INIT                                    //
+//                                   EXEC                                    //
 // ========================================================================= //
 
 // ---- Wrap printing the id and parse result
@@ -33,13 +33,6 @@ onInit.skip(() => {
   const dateStr = new Date(parsedId).toLocaleString();
   logger.info(dateStr);
 }, 'playground__timed-optional');
-
-// ---- Test key
-onInit.skip(() => {
-  for (let i = 0; i < 1000; i++) {
-    logger.info(jetKey());
-  }
-}, 'playground__key');
 
 // ---- Test monotonic
 onInit.sync(() => {

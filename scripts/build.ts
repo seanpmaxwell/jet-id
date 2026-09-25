@@ -6,7 +6,7 @@ import logger from '@src/utils/logger';
 import onInit from '@src/utils/onInit';
 
 // ========================================================================= //
-//                                   INIT                                    //
+//                                   EXEC                                    //
 // ========================================================================= //
 
 await onInit(async () => {

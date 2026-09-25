@@ -5,7 +5,7 @@ import logger from '@src/utils/logger';
 import cli from './cli';
 
 // ========================================================================= //
-//                                   INIT                                    //
+//                                   EXEC                                    //
 // ========================================================================= //
 
 // Keep this listener for the process lifetime: a small write can fail after

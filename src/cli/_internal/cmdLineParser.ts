@@ -5,7 +5,7 @@ import util from 'util';
 // ========================================================================= //
 
 const ShouldBeFirstSet = new Set(['--help', '-h', '--version', '-v']);
-const TypeValuesSet = new Set(['mono', 'timed', 'key']);
+const TypeValuesSet = new Set(['mono', 'timed']);
 
 const PARSE_ARG_OPTIONS = {
   help: { type: 'boolean', short: 'h' },
@@ -23,7 +23,7 @@ export interface ParsedCmdLineArgs {
   help: boolean;
   version: boolean;
   count: number;
-  type: 'mono' | 'timed' | 'key' | null;
+  type: 'mono' | 'timed' | null;
 }
 
 // ========================================================================= //
@@ -71,7 +71,7 @@ function cmdLineParser(args: string[]): ParsedCmdLineArgs {
     // as "=mono", and a message quoting only the allowed values would look
     // wrong to someone who did type "mono".
     throw new Error(
-      `Value passed to --type (-t) must be mono/timed/key: received "${pArgs.type}"`,
+      `Value passed to --type (-t) must be mono/timed: received "${pArgs.type}"`,
     );
   }
 

@@ -26,7 +26,7 @@ const ulidMonotonic = monotonicFactory();
 const ROUNDS = 7;
 
 // ========================================================================= //
-//                                   INIT                                    //
+//                                   EXEC                                    //
 // ========================================================================= //
 
 const nanoidCrockford = customAlphabet(CROCKFORD_ALPHABET, 25);
@@ -113,7 +113,7 @@ onInit.sync(() => {
     for (let position = 0; position < cases.length; position++) {
       const entry = cases[(round + position) % cases.length];
       entry.samples.push(measure(entry.generate, SAMPLE_MS));
-      logger.info('Round', round, 'completed ~', entry.name);
+      logger.info('Round', round, 'completed --', entry.name);
     }
   }
 

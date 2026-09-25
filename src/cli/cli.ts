@@ -4,7 +4,6 @@ import path from 'path';
 import { Writable } from 'stream';
 import { fileURLToPath } from 'url';
 
-import generateKey from '@src/api/helpers/generateKey';
 import jetid from '@src/api/jetid/jetid';
 
 import cmdLineParser, { ParsedCmdLineArgs } from './_internal/cmdLineParser';
@@ -27,13 +26,12 @@ const GENERATORS: Record<
   NonNullable<ParsedCmdLineArgs['type']>,
   () => string
 > = {
-  key: generateKey,
   mono: jetid.mono,
   timed: jetid.timed,
 };
 
 // ========================================================================= //
-//                                   INIT                                    //
+//                                   EXEC                                    //
 // ========================================================================= //
 
 /**

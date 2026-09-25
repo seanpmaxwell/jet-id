@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { resetGeneratorState } from '@src/api/jetid/jetid-mono/generateMonoId';
-import jetid, { jetKey } from '@src/index';
+import jetid from '@src/index';
 
 import {
   MONO_DASH_INDICES,
@@ -152,8 +152,7 @@ describe('jetid.mono.test', () => {
     for (let i = 0; i < 100; i++) {
       const plain = jetid();
       const timed = jetid.timed();
-      const key = jetKey();
-      for (const value of [plain, timed, key]) {
+      for (const value of [plain, timed]) {
         const res = jetid.mono.test(value);
         expect(res, value).toBe(false);
       }

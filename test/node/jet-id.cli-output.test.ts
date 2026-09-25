@@ -10,7 +10,7 @@ import cli from '@src/cli/cli';
 import jetid from '@src/index';
 
 describe('CLI output', () => {
-  it.each([null, 'timed', 'mono', 'key'])(
+  it.each([null, 'timed', 'mono'])(
     'waits for a slow reader without losing %s IDs',
     async (type) => {
       const chunks: string[] = [];
@@ -42,12 +42,7 @@ describe('CLI output', () => {
       const lines = chunks.join('').trimEnd().split('\n');
       expect(lines).toHaveLength(2049);
       expect(output.writableLength).toBe(0);
-      const validate =
-        type === 'key'
-          ? (id: string) => /^[0-9A-HJKMNP-TV-Z]{52}$/.test(id)
-          : type === 'mono'
-            ? jetid.mono.test
-            : jetid.test;
+      const validate = type === 'mono' ? jetid.mono.test : jetid.test;
       expect(lines.every(validate)).toBe(true);
     },
   );

@@ -21,15 +21,15 @@ const REPO_ROOT = path.resolve(__dirname, '../../..');
 const ENTRY_SOURCE = `
 import v8 from 'node:v8';
 
-import jetid, { jetKey } from '@src/index';
+import jetid from '@src/index';
 
-const beforeSnapshot = [jetid(), jetid(), jetid.mono(), jetKey()];
+const beforeSnapshot = [jetid(), jetid(), jetid.mono()];
 
 v8.startupSnapshot.setDeserializeMainFunction(() => {
   console.log(
     JSON.stringify({
       beforeSnapshot,
-      afterRestore: [jetid(), jetid(), jetid.mono(), jetKey()],
+      afterRestore: [jetid(), jetid(), jetid.mono()],
     }),
   );
 });
@@ -116,8 +116,8 @@ describe('v8 startup snapshot', () => {
       return;
     }
     const run = restore();
-    expect(run.beforeSnapshot).toHaveLength(4);
-    expect(run.afterRestore).toHaveLength(4);
+    expect(run.beforeSnapshot).toHaveLength(3);
+    expect(run.afterRestore).toHaveLength(3);
 
     const baked = new Set(run.beforeSnapshot);
     for (const id of run.afterRestore) {

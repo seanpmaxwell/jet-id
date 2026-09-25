@@ -49,7 +49,7 @@ describe('cmdLineParser', () => {
   });
 
   it('parses every --type value', () => {
-    for (const type of ['timed', 'mono', 'key'] as const) {
+    for (const type of ['timed', 'mono'] as const) {
       const forms = [['--type', type], ['-t', type], [`--type=${type}`]];
       for (const args of forms) {
         const parsed = cmdLineParser(args);
@@ -124,8 +124,8 @@ describe('cmdLineParser', () => {
   });
 
   it('rejects the boolean flags this replaced', () => {
-    // `--timed`, `--mono` and `--key` are now `--type` values.
-    for (const args of [['--timed'], ['--mono'], ['--key'], ['-m'], ['-k']]) {
+    // `--timed` and `--mono` are now `--type` values.
+    for (const args of [['--timed'], ['--mono'], ['-m']]) {
       expect(() => cmdLineParser(args), args.join(' ')).toThrow();
     }
   });

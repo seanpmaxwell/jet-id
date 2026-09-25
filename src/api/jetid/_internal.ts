@@ -19,7 +19,7 @@ export const DASH_3_INDEX = DASH_2_INDEX + 1 + SEGMENT_3_LENGTH; // 21
 export const ID_LENGTH = DASH_3_INDEX + 1 + SEGMENT_4_LENGTH; // 28
 
 // ========================================================================= //
-//                                   INIT                                    //
+//                                   EXEC                                    //
 // ========================================================================= //
 
 // ---- Expected layout

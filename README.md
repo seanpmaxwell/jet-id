@@ -38,8 +38,6 @@ A plain ID contains 25 random Crockford base32 characters, grouped as `9-5-5-6`.
   - [`jetid.mono()`](#jetidmono-1)
   - [`jetid.mono.test()`](#jetidmonotest)
   - [`jetid.mono.parse()`](#jetidmonoparse)
-- [jetKey](#jetkey)
-  - [`jetKey()`](#jetkey-1)
 - [Command line](#command-line)
   - [Options](#options)
   - [Generator types](#generator-types)
@@ -56,7 +54,7 @@ A plain ID contains 25 random Crockford base32 characters, grouped as `9-5-5-6`.
 - **Small:** 6.9 kB packed, with zero runtime dependencies.
 - **TypeScript-ready:** Includes type declarations.
 - **Portable:** Works in Node.js and modern browsers.
-- **Flexible:** Choose random IDs, timestamped IDs, strictly ordered IDs, or secret keys.
+- **Flexible:** Choose random IDs, timestamped IDs, or strictly ordered IDs.
 - **Strong randomness:** `jetid()` and `jetid.mono()` provide 125 random bits. For comparison, UUID v4 has 122.
 - **Simple API:** Generate IDs, validate their format, and extract encoded timestamps with a few functions.
 
@@ -69,11 +67,10 @@ A plain ID contains 25 random Crockford base32 characters, grouped as `9-5-5-6`.
 | `jetid()` | Random IDs | 28 |
 | `jetid.timed()` | IDs sortable by encoded timestamp | 28 |
 | `jetid.mono()` | Strictly ordered IDs within one process | 44 |
-| `jetKey()` | Random secrets | 52 |
 
 > `jetid()` and `jetid.timed()` share the same 28-character format. Use `jetid.test()` to validate either, and `jetid.timed.parse()` to extract the timestamp from a timestamped ID.
 
-> `jetid.mono()` and `jetKey()` use different formats. Access `jetid.mono()` through the default `jetid` export; `jetKey` is a named export.
+> `jetid.mono()` uses a different format. Access it through the default `jetid` export.
 
 <p align="center">· · ·</p>
 
@@ -226,37 +223,6 @@ Time comes from `performance.timeOrigin + performance.now()` instead of `Date.no
 
 <p align="center">· · ·</p>
 
-## jetKey
-
-Generates a 52-character Crockford base32 string with no dashes, suitable for secrets such as API keys or symmetric encryption keys. All 52 characters come from the platform's cryptographically secure random source.
-
-#### `jetKey()`
-
-Returns a new key.
-
-```ts
-import { jetKey } from 'jet-id';
-
-jetKey(); // 'YFC75GX2KY5W183FRZA4XDVZ6PYDJPQT7JMNH3N7ZXPQ8FCW3M4G'
-```
-
-> Unique IDs are designed for collision resistance, not necessarily secrecy. Use `jetKey()` when generating a secret.
-
-> `jetKey` is a separate import outside of `jetid` because it isn't technically an **id** generator. But I wanted to include it, so it can take advantage of `jetid`'s extreme performance string generation logic. 
-
-<details>
-<summary>Why 52 characters?</summary>
-
-A common target for high-entropy keys is 256 bits.
-
-Each Crockford base32 character carries 5 bits. Fifty-one characters provide 255 bits, so 52 characters are the fewest needed to reach at least 256 bits.
-
-In practice, `jetKey()` draws 260 random bits.
-
-</details>
-
-<p align="center">· · ·</p>
-
 ## Command line
 
 ```sh
@@ -264,7 +230,6 @@ jet-id                # One random ID.
 jet-id -c 10          # Ten random IDs, one per line.
 jet-id -t timed       # One timestamped ID.
 jet-id -t mono -c 10  # Ten strictly increasing IDs.
-jet-id --type=key     # One 52-character secret key.
 ```
 
 ### Options
@@ -274,7 +239,7 @@ jet-id --type=key     # One 52-character secret key.
 | `--help` | `-h` | Show usage. Must be the only argument. |
 | `--version` | `-v` | Show the installed version. Must be the only argument. |
 | `--count <n>` | `-c` | Number of IDs to print. Defaults to `1`. |
-| `--type <type>` | `-t` | Generator to use: `timed`, `mono`, or `key`. Omit for plain random IDs. Values are case-insensitive. |
+| `--type <type>` | `-t` | Generator to use: `timed` or `mono`. Omit for plain random IDs. Values are case-insensitive. |
 
 ### Generator types
 
@@ -285,7 +250,6 @@ jet-id --type=key     # One 52-character secret key.
 | *(omitted)* | `jetid()` | Random ID | 28 |
 | `timed` | `jetid.timed()` | Timestamped ID | 28 |
 | `mono` | `jetid.mono()` | Strictly ordered ID | 44 |
-| `key` | `jetKey()` | Secret key without dashes | 52 |
 
 **Required value:** If you supply `--type` or `-t`, you must provide a value. Supplying the flag alone produces an error.
 
