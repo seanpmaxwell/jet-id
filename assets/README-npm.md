@@ -13,9 +13,9 @@ npm install jet-id
 ```
 
 ```ts
-import jetId from 'jet-id';
+import jetid from 'jet-id';
 
-jetId(); // '9Q8SWWBTY-7NVXM-FT9S6-XB4R3M'
+jetid(); // '9Q8SWWBTY-7NVXM-FT9S6-XB4R3M'
 ```
 
 

@@ -44,45 +44,45 @@ async function freshJetId(): Promise<typeof import('@src/index').default> {
 
 describe('pool boundary', () => {
   it.each(COUNTS)('generates exactly %i unique, valid ids', async (count) => {
-    const jetId = await freshJetId();
+    const jetid = await freshJetId();
 
     const ids = new Set<string>();
     for (let i = 0; i < count; i++) {
-      ids.add(jetId());
+      ids.add(jetid());
     }
 
     expect(ids.size).toBe(count);
     for (const id of ids) {
       expect(id).toHaveLength(ID_LENGTH);
-      const res = jetId.test(id);
+      const res = jetid.test(id);
       expect(res).toBe(true);
     }
   });
 
   it('hands out contiguous ids across a chunk refill', async () => {
-    const jetId = await freshJetId();
+    const jetid = await freshJetId();
 
     // Drain to one id short of the boundary, then straddle it.
     for (let i = 0; i < CHUNK_IDS - 1; i++) {
-      jetId();
+      jetid();
     }
-    const before = jetId(); // last of chunk 0
-    const after = jetId(); // first of chunk 1
+    const before = jetid(); // last of chunk 0
+    const after = jetid(); // first of chunk 1
 
-    const beforeRes = jetId.test(before);
-    const afterRes = jetId.test(after);
+    const beforeRes = jetid.test(before);
+    const afterRes = jetid.test(after);
     expect(beforeRes).toBe(true);
     expect(afterRes).toBe(true);
     expect(before).not.toBe(after);
   });
 
   it('stays unique across many consecutive draws', async () => {
-    const jetId = await freshJetId();
+    const jetid = await freshJetId();
 
     const total = 4 * DRAW_IDS;
     const ids = new Set<string>();
     for (let i = 0; i < total; i++) {
-      ids.add(jetId());
+      ids.add(jetid());
     }
     expect(ids.size).toBe(total);
   });

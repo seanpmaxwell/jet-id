@@ -78,7 +78,7 @@ const decodePool = createPoolDecoder(chunkBytes);
  *
  * All 52 characters come from the platform's secure random source. Keys
  * contain no separators and no timestamp, and they are not jet-ids: at 52
- * characters they fail `jetId.test` and `jetId.mono.test` alike.
+ * characters they fail `jetid.test` and `jetid.mono.test` alike.
  */
 function generateKey(): string {
   if (poolOffset === CHUNK_BYTES) {

@@ -1,2 +1,2 @@
-export { default as default } from './api/jetId/jetId';
+export { default as default } from './api/jetid/jetid';
 export { jetKey } from './api/helpers';

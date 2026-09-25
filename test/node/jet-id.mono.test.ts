@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { resetGeneratorState } from '@src/api/jetId/jetIdMono/generateMonoId';
-import jetId, { jetKey } from '@src/index';
+import { resetGeneratorState } from '@src/api/jetid/jetid-mono/generateMonoId';
+import jetid, { jetKey } from '@src/index';
 
 import {
   MONO_DASH_INDICES,
@@ -17,14 +17,14 @@ import { decodeBase32, swap } from '@test/_common/utils';
 //                                   TESTS                                   //
 // ========================================================================= //
 
-// ---- `jetIdMono`
-describe('jetId.mono()', () => {
+// ---- `jetidMono`
+describe('jetid.mono()', () => {
   // The sequence lives in module state, so each case starts from a fresh
   // one instead of inheriting the counter the previous case left behind.
   beforeEach(resetGeneratorState);
 
   it('puts a dash at every layout boundary and nowhere else', () => {
-    const id = jetId.mono();
+    const id = jetid.mono();
     for (let i = 0; i < MONO_ID_LENGTH; i++) {
       const isDash = id[i] === '-';
       const shouldBeDash = MONO_DASH_INDICES.includes(i);
@@ -34,15 +34,15 @@ describe('jetId.mono()', () => {
 
   it('only uses Crockford base32 characters', () => {
     for (let i = 0; i < 1_000; i++) {
-      const id = jetId.mono();
+      const id = jetid.mono();
       expect(id).toMatch(MONO_ID_PATTERN);
     }
   });
 
   it('encodes the current time in the first nine characters', () => {
-    // Decoded here rather than through `jetId.timed.parse`, which validates
+    // Decoded here rather than through `jetid.timed.parse`, which validates
     // the 28-character format and so rejects a mono id outright.
-    const id = jetId.mono();
+    const id = jetid.mono();
     const timestamp = id.slice(0, 9);
     const epoch = decodeBase32(timestamp);
     const res = Math.abs(epoch - Date.now());
@@ -52,7 +52,7 @@ describe('jetId.mono()', () => {
   it('generates unique ids across multiple pool refills', () => {
     const ids = new Set<string>();
     for (let i = 0; i < 10_000; i++) {
-      ids.add(jetId.mono());
+      ids.add(jetid.mono());
     }
     expect(ids.size).toBe(10_000);
   });
@@ -60,7 +60,7 @@ describe('jetId.mono()', () => {
   it('returns ids that sort in generation order', () => {
     const ids: string[] = [];
     for (let i = 0; i < 10_000; i++) {
-      ids.push(jetId.mono());
+      ids.push(jetid.mono());
     }
     const sorted = [...ids].sort();
     expect(sorted).toEqual(ids);
@@ -68,31 +68,31 @@ describe('jetId.mono()', () => {
 
   it('is a different format, so it fails the 28-character validator', () => {
     for (let i = 0; i < 100; i++) {
-      const id = jetId.mono();
-      const res = jetId.test(id);
+      const id = jetid.mono();
+      const res = jetid.test(id);
       expect(res).toBe(false);
     }
   });
 });
 
-// ---- `jetId.mono.test`
-describe('jetId.mono.test', () => {
+// ---- `jetid.mono.test`
+describe('jetid.mono.test', () => {
   it('accepts a well-formed id, in either case', () => {
-    const dummyRes = jetId.mono.test(VALID_DUMMY_MONO_ID);
+    const dummyRes = jetid.mono.test(VALID_DUMMY_MONO_ID);
     expect(dummyRes).toBe(true);
     for (let i = 0; i < 1_000; i++) {
-      const id = jetId.mono();
-      const res = jetId.mono.test(id);
+      const id = jetid.mono();
+      const res = jetid.mono.test(id);
       expect(res).toBe(true);
       const lower = id.toLowerCase();
-      const lowerRes = jetId.mono.test(lower);
+      const lowerRes = jetid.mono.test(lower);
       expect(lowerRes).toBe(true);
     }
   });
 
   it('rejects non-strings', () => {
     for (const value of NON_STRING_VALUES) {
-      const res = jetId.mono.test(value);
+      const res = jetid.mono.test(value);
       expect(res).toBe(false);
     }
   });
@@ -102,7 +102,7 @@ describe('jetId.mono.test', () => {
     const tooShort = VALID_DUMMY_MONO_ID.slice(1);
     const spacePrefixed = ' ' + VALID_DUMMY_MONO_ID.slice(1);
     for (const value of [tooLong, tooShort, spacePrefixed]) {
-      const res = jetId.mono.test(value);
+      const res = jetid.mono.test(value);
       expect(res, value).toBe(false);
     }
   });
@@ -111,7 +111,7 @@ describe('jetId.mono.test', () => {
     // I, L, O and U are excluded from the alphabet on purpose.
     for (const char of ['I', 'L', 'O', 'U', '@', 'é']) {
       const id = swap(VALID_DUMMY_MONO_ID, 0, char);
-      const res = jetId.mono.test(id);
+      const res = jetid.mono.test(id);
       expect(res, char).toBe(false);
     }
   });
@@ -124,7 +124,7 @@ describe('jetId.mono.test', () => {
     for (let i = 0; i < MONO_ID_LENGTH; i++) {
       for (const char of beyond) {
         const id = swap(VALID_DUMMY_MONO_ID, i, char);
-        const res = jetId.mono.test(id);
+        const res = jetid.mono.test(id);
         expect(res, `index ${i}, code point ${char.charCodeAt(0)}`).toBe(false);
       }
     }
@@ -134,7 +134,7 @@ describe('jetId.mono.test', () => {
     for (let i = 0; i < MONO_ID_LENGTH; i++) {
       if (!MONO_DASH_INDICES.includes(i)) {
         const id = swap(VALID_DUMMY_MONO_ID, i, '-');
-        const res = jetId.mono.test(id);
+        const res = jetid.mono.test(id);
         expect(res, `dash at index ${i}`).toBe(false);
       }
     }
@@ -143,32 +143,32 @@ describe('jetId.mono.test', () => {
   it('rejects an alphabet character where a dash belongs', () => {
     for (const i of MONO_DASH_INDICES) {
       const id = swap(VALID_DUMMY_MONO_ID, i, 'A');
-      const res = jetId.mono.test(id);
+      const res = jetid.mono.test(id);
       expect(res, `index ${i}`).toBe(false);
     }
   });
 
   it('rejects the other formats in this package', () => {
     for (let i = 0; i < 100; i++) {
-      const plain = jetId();
-      const timed = jetId.timed();
+      const plain = jetid();
+      const timed = jetid.timed();
       const key = jetKey();
       for (const value of [plain, timed, key]) {
-        const res = jetId.mono.test(value);
+        const res = jetid.mono.test(value);
         expect(res, value).toBe(false);
       }
     }
   });
 });
 
-// ---- `jetId.mono.parse`
-describe('jetId.mono.parse', () => {
+// ---- `jetid.mono.parse`
+describe('jetid.mono.parse', () => {
   beforeEach(resetGeneratorState);
 
   it('reads back every field the generator encoded', () => {
     for (let i = 0; i < 1_000; i++) {
-      const id = jetId.mono();
-      const parsed = jetId.mono.parse(id);
+      const id = jetid.mono();
+      const parsed = jetid.mono.parse(id);
       const epoch = decodeBase32(id.slice(0, 9));
       const fraction = decodeBase32(id.slice(10, 12));
       const counter = decodeBase32(id.slice(12, 16));
@@ -178,8 +178,8 @@ describe('jetId.mono.parse', () => {
 
   it('keeps each field inside the width its characters allow', () => {
     for (let i = 0; i < 1_000; i++) {
-      const id = jetId.mono();
-      const { epoch, fraction, counter } = jetId.mono.parse(id);
+      const id = jetid.mono();
+      const { epoch, fraction, counter } = jetid.mono.parse(id);
       const epochIsSafe = Number.isSafeInteger(epoch);
       expect(epochIsSafe).toBe(true);
       expect(epoch).toBeGreaterThanOrEqual(0);
@@ -192,10 +192,10 @@ describe('jetId.mono.parse', () => {
   });
 
   it('accepts lowercase', () => {
-    const id = jetId.mono();
+    const id = jetid.mono();
     const lowercaseId = id.toLowerCase();
-    const lowerCaseParse = jetId.mono.parse(lowercaseId);
-    const normalParse = jetId.mono.parse(id);
+    const lowerCaseParse = jetid.mono.parse(lowercaseId);
+    const normalParse = jetid.mono.parse(id);
     expect(lowerCaseParse).toEqual(normalParse);
   });
 
@@ -203,18 +203,18 @@ describe('jetId.mono.parse', () => {
     const tooShort = VALID_DUMMY_MONO_ID.slice(1);
     const badChar = swap(VALID_DUMMY_MONO_ID, 0, 'I');
     const badDash = swap(VALID_DUMMY_MONO_ID, 0, '-');
-    const plainId = jetId();
+    const plainId = jetid();
 
-    expect(() => jetId.mono.parse('')).toThrow(TypeError);
-    expect(() => jetId.mono.parse(tooShort)).toThrow(TypeError);
-    expect(() => jetId.mono.parse(badChar)).toThrow(TypeError);
-    expect(() => jetId.mono.parse(badDash)).toThrow(TypeError);
-    expect(() => jetId.mono.parse(plainId)).toThrow(TypeError);
+    expect(() => jetid.mono.parse('')).toThrow(TypeError);
+    expect(() => jetid.mono.parse(tooShort)).toThrow(TypeError);
+    expect(() => jetid.mono.parse(badChar)).toThrow(TypeError);
+    expect(() => jetid.mono.parse(badDash)).toThrow(TypeError);
+    expect(() => jetid.mono.parse(plainId)).toThrow(TypeError);
   });
 
   it('throws on non-strings', () => {
     for (const value of NON_STRING_VALUES) {
-      expect(() => jetId.mono.parse(value as string)).toThrow(TypeError);
+      expect(() => jetid.mono.parse(value as string)).toThrow(TypeError);
     }
   });
 });

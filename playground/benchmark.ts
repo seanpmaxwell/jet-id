@@ -8,7 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import logger from '@src/utils/logger';
 import onInit from '@src/utils/onInit';
 
-import jetId from '../src';
+import jetid from '../src';
 
 // ========================================================================= //
 //                                 CONSTANTS                                 //
@@ -21,7 +21,7 @@ const WARMUP_MS = 500;
 const SAMPLE_MS = 500;
 
 // ULID's monotonic mode is a factory that keeps its own counter, like
-// jetIdMono; one instance for the whole run so the comparison is fair.
+// jetidMono; one instance for the whole run so the comparison is fair.
 const ulidMonotonic = monotonicFactory();
 const ROUNDS = 7;
 
@@ -40,14 +40,14 @@ onInit.sync(() => {
 
   const cases = [
     {
-      name: 'jetId()',
-      generate: jetId,
+      name: 'jetid()',
+      generate: jetid,
       chars: 28,
       bits: 125,
     },
     {
-      name: 'jetId.timed()',
-      generate: () => jetId.timed(),
+      name: 'jetid.timed()',
+      generate: () => jetid.timed(),
       chars: 28,
       bits: 80,
     },
@@ -70,8 +70,8 @@ onInit.sync(() => {
       bits: 125,
     },
     {
-      name: 'jetId.mono()',
-      generate: () => jetId.mono(),
+      name: 'jetid.mono()',
+      generate: () => jetid.mono(),
       chars: 44,
       bits: 125,
     },
@@ -123,7 +123,7 @@ onInit.sync(() => {
   }));
 
   // Read the baseline before sorting: relative throughput is quoted against
-  // jetId(), which is the first case, not against whatever turns out fastest.
+  // jetid(), which is the first case, not against whatever turns out fastest.
   const baseline = results[0].ops;
 
   // Fastest first, so the table reads in the same order as the README's.
@@ -163,7 +163,7 @@ onInit.sync(() => {
   }
 
   // ---- Final Message
-  logger.info('\nRelative throughput uses jetId() as 1.00x; higher is faster.');
+  logger.info('\nRelative throughput uses jetid() as 1.00x; higher is faster.');
   logger.info(
     'Measurements include generation and one character read per ID.',
     'ns/ID is amortized time derived from throughput, not individual-call latency.',

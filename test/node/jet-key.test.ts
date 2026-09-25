@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import jetId, { jetKey } from '@src/index';
+import jetid, { jetKey } from '@src/index';
 
 // ========================================================================= //
 //                                 CONSTANTS                                 //
@@ -30,7 +30,7 @@ describe('jetKey()', () => {
 
   it('is not a valid jet-id', () => {
     const key = jetKey();
-    const res = jetId.test(key);
+    const res = jetid.test(key);
     expect(res).toBe(false);
   });
 

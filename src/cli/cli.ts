@@ -3,7 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 import generateKey from '@src/api/helpers/generateKey';
-import jetId from '@src/api/jetId/jetId';
+import jetid from '@src/api/jetid/jetid';
 
 import cmdLineParser, { ParsedCmdLineArgs } from './_internal/cmdLineParser';
 import printHelpText from './_internal/printHelpText';
@@ -26,8 +26,8 @@ const GENERATORS: Record<
   () => string
 > = {
   key: generateKey,
-  mono: jetId.mono,
-  timed: jetId.timed,
+  mono: jetid.mono,
+  timed: jetid.timed,
 };
 
 // ========================================================================= //
@@ -71,7 +71,7 @@ function printIds(args: ParsedCmdLineArgs): void {
   const { count } = args;
   let batch = '';
   // Set the function to use
-  const generateFn = args.type === null ? jetId : GENERATORS[args.type];
+  const generateFn = args.type === null ? jetid : GENERATORS[args.type];
   // Call it by the count number
   for (let i = 0; i < count; i++) {
     batch += generateFn() + '\n';
