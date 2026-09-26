@@ -82,15 +82,42 @@ async function printIds(
   for (let i = 0; i < count; i++) {
     batch += generateFn() + '\n';
     if ((i & 1023) === 1023) {
-      if (!output.write(batch)) {
-        await once(output, 'drain');
-      }
+      if (!output.write(batch) && !(await waitForDrain(output))) return;
       batch = '';
     }
   }
   // Print items.
   if (batch !== '' && !output.write(batch)) {
+    await waitForDrain(output);
+  }
+}
+
+/**
+ * Waits for backpressure on `output` to clear, resolving to whether writing
+ * may continue.
+ *
+ * A closed reader (e.g. `head`) surfaces here as an EPIPE instead of a
+ * 'drain' event, since `output` errors while this is the only pending
+ * operation on it. Swallowing that error and reporting "stop" lets
+ * `printIds` return normally, rather than reject and race the top-level
+ * `process.stdout` handler in main.ts to decide the exit code.
+ *
+ * Used by: {@link printIds}
+ *
+ * @private
+ */
+async function waitForDrain(output: Writable): Promise<boolean> {
+  try {
     await once(output, 'drain');
+    return true;
+  } catch (err) {
+    if (
+      err instanceof Error &&
+      (err as NodeJS.ErrnoException).code === 'EPIPE'
+    ) {
+      return false;
+    }
+    throw err;
   }
 }
 
