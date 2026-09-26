@@ -1,4 +1,4 @@
-# jet-id
+# ✈️ 🪪 jet-id
 
 [![npm](https://img.shields.io/npm/v/jet-id?style=flat-square&logo=npm&logoColor=white&color=cb3837)](https://www.npmjs.com/package/jet-id)
 [![CI](https://img.shields.io/github/actions/workflow/status/seanpmaxwell/jet-id/ci.yml?style=flat-square&logo=github&logoColor=white&label=CI)](https://github.com/seanpmaxwell/jet-id/actions/workflows/ci.yml)
@@ -22,35 +22,35 @@ A plain ID contains 25 random Crockford base32 characters, grouped as `9-5-5-6`.
 
 <p align="center">· · ·</p>
 
-## Table of Contents
+## 📚 Table of Contents
 
 <!-- toc -->
 
 - [Quick start](#quick-start)
-- [Why jet-id?](#why-jet-id)
-- [API](#api)
-- [jetid](#jetid)
-  - [`jetid()`](#jetid-1)
+- [Why jet-id?](#-why-jet-id)
+- [API](#-api)
+- [jetid](#-jetid)
+  - [`jetid()`](#jetid)
   - [`jetid.test()`](#jetidtest)
   - [`jetid.timed()`](#jetidtimed)
   - [`jetid.timed.parse()`](#jetidtimedparse)
-- [jetid.mono](#jetidmono)
-  - [`jetid.mono()`](#jetidmono-1)
+- [jetid.mono](#️-jetidmono)
+  - [`jetid.mono()`](#jetidmono)
   - [`jetid.mono.test()`](#jetidmonotest)
   - [`jetid.mono.parse()`](#jetidmonoparse)
-- [Command line](#command-line)
+- [Command line](#-command-line)
   - [Options](#options)
   - [Generator types](#generator-types)
-- [Benchmarks](#benchmarks)
-- [License](#license)
+- [Benchmarks](#-benchmarks)
+- [License](#-license)
 
 <p align="center">· · ·</p>
 
 <!-- tocstop -->
 
-## Why jet-id?
+## ❓ Why jet-id?
 
-- **Fast:** Faster than `nanoid()` in the included [benchmarks](#benchmarks).
+- **Fast:** Faster than `nanoid()` in the included [benchmarks](#-benchmarks).
 - **Small:** 2.7 kB minified + gzipped, with zero runtime dependencies.
 - **TypeScript-ready:** Includes type declarations.
 - **Portable:** Works in Node.js and modern browsers.
@@ -60,7 +60,7 @@ A plain ID contains 25 random Crockford base32 characters, grouped as `9-5-5-6`.
 
 <p align="center">· · ·</p>
 
-## API
+## ✅ API
 
 | Generator | Purpose | Length |
 |---|---|---:|
@@ -74,7 +74,7 @@ A plain ID contains 25 random Crockford base32 characters, grouped as `9-5-5-6`.
 
 <p align="center">· · ·</p>
 
-## jetid
+## 👀 jetid
 
 The default export generates random IDs and provides helpers for validation, timestamping, and monotonic IDs.
 
@@ -144,7 +144,7 @@ new Date(jetid.timed.parse(timedId)).toISOString();
 
 <p align="center">· · ·</p>
 
-## jetid.mono
+## 🗃️ jetid.mono
 
 Generates timestamped, monotonic IDs: each ID sorts strictly after the previous one, including within a single millisecond. IDs are 44 characters long, with 40 Crockford base32 characters grouped as `9-6-8-8-9`.
 
@@ -223,7 +223,7 @@ Time comes from `performance.timeOrigin + performance.now()` instead of `Date.no
 
 <p align="center">· · ·</p>
 
-## Command line
+## 📟 Command line
 
 ```sh
 jet-id                # One random ID.
@@ -255,7 +255,7 @@ jet-id -t mono -c 10  # Ten strictly increasing IDs.
 
 <p align="center">· · ·</p>
 
-## Benchmarks
+## ⚡ Benchmarks
 
 **Environment:** Node v24.13.0 · V8 13.6.233.17-node.37 · darwin/arm64 · Apple M4 Pro
 
@@ -276,6 +276,6 @@ jet-id -t mono -c 10  # Ten strictly increasing IDs.
 
 <p align="center">· · ·</p>
 
-## License
+## 💳 License
 
 [MIT](./LICENSE) © seanpmaxwell
