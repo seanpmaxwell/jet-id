@@ -1,6 +1,6 @@
 {
   "name": "jet-id",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "publishConfig": {
     "access": "public"
   },
@@ -37,18 +37,14 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "readme:swap": "tsx scripts/readme.ts swap",
-    "readme:restore": "tsx scripts/readme.ts restore",
     "prepublishOnly": "npm run build && tsc && npm run lint && npm run format:check && npm test && npm run test:browser",
-    "postpack": "npm run readme:restore",
     "npm-data": "npm run build && npm pack --dry-run --json",
     "start": "node lib/cli.js",
     "start:build": "npm run build && npm run start --",
     "test": "vitest run",
     "test:node": "vitest run test/node",
     "test:browser": "vitest run --config vitest.browser.config.ts",
-    "typecheck": "tsc",
-    "prepack": "npm run readme:swap"
+    "typecheck": "tsc"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
