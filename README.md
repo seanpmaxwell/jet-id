@@ -51,7 +51,7 @@ A plain ID contains 25 random Crockford base32 characters, grouped as `9-5-5-6`.
 ## Why jet-id?
 
 - **Fast:** Faster than `nanoid()` in the included [benchmarks](#benchmarks).
-- **Small:** 6.9 kB packed, with zero runtime dependencies.
+- **Small:** 2.7 kB minified + gzipped, with zero runtime dependencies.
 - **TypeScript-ready:** Includes type declarations.
 - **Portable:** Works in Node.js and modern browsers.
 - **Flexible:** Choose random IDs, timestamped IDs, or strictly ordered IDs.
