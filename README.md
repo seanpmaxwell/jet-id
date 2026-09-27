@@ -14,7 +14,7 @@ npx jet-id
 # outputs 'DXJK0BT3V-Y567B6-EPJ0K-R27NZ'
 ```
 
-A plain ID contains 25 random Crockford base32 characters, grouped as `9-6-5-5`. Including the three dashes, each ID is 28 characters long.
+> The default settings produce an ID containing 25 random Crockford base32 characters, grouped as `9-6-5-5`. Including the three dashes, each ID is 28 characters long.
 
 <p align="center">* * *</p>
 
