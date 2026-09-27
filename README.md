@@ -28,6 +28,7 @@ A plain ID contains 25 random Crockford base32 characters, grouped as `9-6-5-5`.
 
 - [Quick start](#quick-start)
 - [Why jet-id?](#-why-jet-id)
+- [Entropy](#-entropy)
 - [API](#-api)
   - [jetid](#jetid)
   - [jetid.timed](#jetidtimed)
@@ -47,7 +48,8 @@ A plain ID contains 25 random Crockford base32 characters, grouped as `9-6-5-5`.
 - **TypeScript-ready:** Includes type declarations.
 - **Portable:** Works in Node.js and modern browsers.
 - **Flexible:** Choose random IDs, timestamped IDs, or strictly ordered IDs.
-- **Configurable randomness:** Defaults are 125 random bits for `jetid()`, 80 for `.timed()`, and 50 for `.mono()`. Choose a minimum with the optional entropy parameter. For comparison, UUID v4 has 122.
+- **Configurable randomness:** Defaults are 125 random bits for `jetid()`, 80 for `.timed()`, and 50 for `.mono()`.
+  - Choose a minimum with the optional entropy parameter. For comparison, UUID v4 has 122.
 - **Simple API:** Generate IDs, validate their format, and extract encoded timestamps with a few functions.
 
 <p align="center">· · ·</p>
@@ -64,7 +66,7 @@ A plain ID contains 25 random Crockford base32 characters, grouped as `9-6-5-5`.
 
 <p align="center">· · ·</p>
 
-## 🎆 Entropy
+##  🎆  Entropy
 
 Every generator accepts an optional entropy value (**80–1024 random bits**) and generates the shortest ID that provides at least that many random bits. Omit it to keep the default 28-character `9-6-5-5` layout. Invalid values throw a `RangeError`.
 
@@ -78,11 +80,9 @@ jetid.timed({ entropy: 256 }); // current timestamp with at least 256 random bit
 
 The first two segments are always 9 and 6 characters, so timed and mono IDs keep their timestamp and sequence in the same positions at every length. IDs have at least three segments, and each later segment contains 5–10 characters.
 
-The tail grows from 5 to 10 characters, then expands to `6-5` and grows toward `10-10`. After that, a new segment opens as `10-6-5`, and the pattern repeats. This keeps the ID as short as possible.
+The tail grows from 5 to 10 characters, then expands to `6-5` and grows toward `10-10`. After that, a new segment opens as `10-6-5`, and the pattern repeats. The point of this is to keep each segment length <10 for readability purposes.
 
-The layout can provide more entropy than requested. For example, `jetid(80)` uses `9-6-5` and provides 100 random bits. `jetid.timed({ entropy: 80 })` uses `9-6-10`, while `jetid.mono(80)` uses `9-6-8-8`.
-
-Explicit defaults can also be shorter: `jetid(125)` and `jetid.timed({ entropy: 80 })` use `9-6-10` instead of `9-6-5-5`. `jetid.mono(125)` uses `9-6-10-8-7`. A 1024-bit request rounds to 1025 bits and produces IDs of 225, 235, and 242 characters respectively.
+The string length generated is the minimum needed to meet the requested entropy using Crockford base32, rather than an exact match to the requested number of bits. Each character contributes five bits, so the result may slightly exceed the target.
 
 ```ts
 jetid.mono(125); // '1M3GAYGPN-M80000-CMN58V0Y8W-DNP1JJJ2-VT8ENW7'
@@ -96,7 +96,7 @@ jetid.mono(125); // '1M3GAYGPN-M80000-CMN58V0Y8W-DNP1JJJ2-VT8ENW7'
 
 The default export generates random IDs and provides helpers for validation, timestamping, and monotonic IDs.
 
-#### `jetid(entropy?: number): string`
+##### `jetid(entropy?: number): string`
 
 Generates a random ID with 125 random bits and 28 characters by default. No options are required.
 
@@ -108,7 +108,7 @@ jetid(); // 'DXJK0BT3V-Y567B6-EPJ0K-R27NZ'
 
 ---
 
-#### `jetid.test(id: unknown): boolean`
+##### `jetid.test(id: unknown): boolean`
 
 Checks whether a value is a well-formed random, timed, or mono ID string at any supported length. Accepts any value and returns `false` if the format is invalid. Validation is case-insensitive and checks the shape, not which generator produced the ID.
 
@@ -128,7 +128,7 @@ jetid.test(null); // false
 
 Replaces the first segment with a timestamp encoded as a Crockford string: the current time by default, or `options.epoch`.
 
-#### `jetid.timed(options?: { epoch?: number; entropy?: number }): string`
+##### `jetid.timed(options?: { epoch?: number; entropy?: number }): string`
 
 | Option | Description | Default |
 |---|---|---|
@@ -154,7 +154,7 @@ jetid.timed({ epoch: date.getTime(), entropy: 128 });
 
 ---
 
-#### `jetid.timed.parse(id: unknown): number`
+##### `jetid.timed.parse(id: unknown): number`
 
 Extracts the epoch timestamp, in milliseconds, from a timestamped ID. Uses the same case-insensitive format validation as `jetid.test()`.
 
@@ -164,8 +164,8 @@ const timedId = jetid.timed({ epoch });
 
 jetid.timed.parse(timedId); // 1433289600000
 
-new Date(jetid.timed.parse(timedId)).toISOString();
-// '2015-06-03T00:00:00.000Z'
+const parsedEpoch = jetid.timed.parse(timedId);
+new Date(parsedEpoch).toISOString(); // '2015-06-03T00:00:00.000Z'
 ```
 
 <p align="center">· · ·</p>
@@ -174,7 +174,7 @@ new Date(jetid.timed.parse(timedId)).toISOString();
 
 Generates timestamped, monotonic IDs: each ID sorts strictly after the previous one, including within a single millisecond. The first segment is replaced by the epoch (like in `.timed`) and the second segment is replaced by the **sequence**.
 
-#### `jetid.mono(entropy?: number): string`
+##### `jetid.mono(entropy?: number): string`
 
 ```ts
 import jetid from 'jet-id';
@@ -188,7 +188,7 @@ jetid.mono(); // '1M3GAYGPN-830000-Q9K8W-SKJ2M'
 
 ---
 
-#### `jetid.mono.parse(id: unknown): { epoch: number; sequence: number }`
+##### `jetid.mono.parse(id: unknown): { epoch: number; sequence: number }`
 
 Extracts the two encoded ordering fields. Parsing is case-insensitive. An ID that fails `jetid.test()` throws a `TypeError`.
 
