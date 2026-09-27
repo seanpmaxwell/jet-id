@@ -20,13 +20,12 @@ jetid(); // 'DXJK0BT3V-Y567B6-EPJ0K-R27NZ'
 
 A plain ID contains 25 random Crockford base32 characters, grouped as `9-6-5-5`. Including the three dashes, each ID is 28 characters long.
 
-<p align="center">· · ·</p>
+<p align="center">* * *</p>
 
 ## 📚 Table of Contents
 
 <!-- toc -->
 
-- [Quick start](#quick-start)
 - [Why jet-id?](#-why-jet-id)
 - [Entropy](#-entropy)
 - [API](#-api)
@@ -37,7 +36,7 @@ A plain ID contains 25 random Crockford base32 characters, grouped as `9-6-5-5`.
 - [Benchmarks](#-benchmarks)
 - [License](#-license)
 
-<p align="center">· · ·</p>
+<p align="center">* * *</p>
 
 <!-- tocstop -->
 
@@ -52,7 +51,7 @@ A plain ID contains 25 random Crockford base32 characters, grouped as `9-6-5-5`.
   - Choose a minimum with the optional entropy parameter. For comparison, UUID v4 has 122.
 - **Simple API:** Generate IDs, validate their format, and extract encoded timestamps with a few functions.
 
-<p align="center">· · ·</p>
+<p align="center">* * *</p>
 
 ## ✅ API
 
@@ -64,9 +63,9 @@ A plain ID contains 25 random Crockford base32 characters, grouped as `9-6-5-5`.
 
 > All three generators default to the same 28-character `9-6-5-5` format and accept an optional `entropy` value.
 
-<p align="center">· · ·</p>
+<p align="center">* * *</p>
 
-##  🎆  Entropy
+## 🎆 Entropy
 
 Every generator accepts an optional entropy value (**80–1024 random bits**) and generates the shortest ID that provides at least that many random bits. Omit it to keep the default 28-character `9-6-5-5` layout. Invalid values throw a `RangeError`.
 
@@ -90,7 +89,7 @@ jetid.mono(125); // '1M3GAYGPN-M80000-CMN58V0Y8W-DNP1JJJ2-VT8ENW7'
 
 </details>
 
-<p align="center">· · ·</p>
+<p align="center">* * *</p>
 
 ## jetid
 
@@ -122,7 +121,7 @@ jetid.test('not-an-id'); // false
 jetid.test(null); // false
 ```
 
-<p align="center">· · ·</p>
+<p align="center">* * *</p>
 
 ## jetid.timed
 
@@ -168,7 +167,7 @@ const parsedEpoch = jetid.timed.parse(timedId);
 new Date(parsedEpoch).toISOString(); // '2015-06-03T00:00:00.000Z'
 ```
 
-<p align="center">· · ·</p>
+<p align="center">* * *</p>
 
 ## jetid.mono
 
@@ -222,7 +221,7 @@ Time comes from `performance.timeOrigin + performance.now()` instead of `Date.no
 
 </details>
 
-<p align="center">· · ·</p>
+<p align="center">* * *</p>
 
 ## 📟 Command line
 
@@ -245,7 +244,7 @@ jet-id -t timed -c 5 -e 160  # Five timestamped IDs, each with at least 160 rand
 | `--type <type>` | `-t` | Generator to use: `timed` or `mono`. Omit for plain random IDs. Values are case-insensitive. |
 | `--entropy` | `-e` | Minimum random bits per ID: an integer from `80` to `1024`. See [Entropy](#-entropy). |
 
-<p align="center">· · ·</p>
+<p align="center">* * *</p>
 
 ## ⚡ Benchmarks
 
@@ -266,7 +265,7 @@ jet-id -t timed -c 5 -e 160  # Five timestamped IDs, each with at least 160 rand
 | ulid (monotonic) | 26 | 80 | 3,610,672 | 277.0 | 0.05x |
 | ulid() | 26 | 80 | 103,419 | 9669.4 | 0.00x |
 
-<p align="center">· · ·</p>
+<p align="center">* * *</p>
 
 ## 💳 License
 
