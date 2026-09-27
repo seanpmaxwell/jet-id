@@ -3,9 +3,7 @@
   "importOrder": [
     "<THIRD_PARTY_MODULES>",
     "^@src/.*$",
-    "^@common/.*$",
-    "^@utilm/.*$",
-    "^@(logger|shell)$",
+    "^@cmn/.*$",
     "^@test/.*$",
     "^\\.\\.(?!/?$).*$",
     "^\\./(?!.*/).*$",

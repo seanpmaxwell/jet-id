@@ -36,9 +36,9 @@ describe('jetid() in the browser', () => {
     expect(id).toHaveLength(28);
   });
 
-  it('uses the 9-5-5-6 dash layout', () => {
+  it('uses the 9-6-5-5 dash layout', () => {
     const segments = jetid().split('-');
-    expect(segments.map((segment) => segment.length)).toEqual([9, 5, 5, 6]);
+    expect(segments.map((segment) => segment.length)).toEqual([9, 6, 5, 5]);
   });
 
   it('only uses Crockford base32 characters', () => {
@@ -67,13 +67,13 @@ describe('jetid.mono() in the browser', () => {
     expect(Number.isFinite(performance.timeOrigin)).toBe(true);
   });
 
-  it('returns a valid id in the 9-6-8-8-9 layout', () => {
+  it('returns a valid id in the 9-6-5-5 layout', () => {
     const id = jetid.mono();
-    expect(id).toHaveLength(44);
+    expect(id).toHaveLength(28);
     expect(id.split('-').map((segment) => segment.length)).toEqual([
-      9, 6, 8, 8, 9,
+      9, 6, 5, 5,
     ]);
-    expect(id).toMatch(/^[0-9A-HJKMNP-TV-Z-]{44}$/);
+    expect(id).toMatch(/^[0-9A-HJKMNP-TV-Z-]{28}$/);
   });
 
   it('returns ids that sort in generation order across pool refills', () => {
@@ -83,5 +83,36 @@ describe('jetid.mono() in the browser', () => {
     }
     expect([...ids].sort()).toEqual(ids);
     expect(new Set(ids).size).toBe(10_000);
+  });
+});
+
+describe('entropy in the browser', () => {
+  it('generates and parses expanded IDs through Web Crypto pool refills', () => {
+    const ids = new Set<string>();
+    let previousMono = '';
+    for (let i = 0; i < 1000; i++) {
+      const entropy = [80, 100, 125, 1024][i % 4];
+      const random = jetid(entropy);
+      const timed = jetid.timed({ epoch: 123456789, entropy });
+      const mono = jetid.mono(entropy);
+      for (const id of [random, timed, mono]) {
+        expect(jetid.test(id)).toBe(true);
+        ids.add(id);
+      }
+      expect(jetid.timed.parse(timed)).toBe(123456789);
+      expect(jetid.mono.parse(mono).epoch).toBeGreaterThan(0);
+      expect(mono > previousMono).toBe(true);
+      previousMono = mono;
+    }
+    expect(ids.size).toBe(3000);
+  });
+
+  it('validates entropy bounds and default sizes', () => {
+    expect(jetid(80)).toHaveLength(22);
+    expect(jetid.timed({ entropy: 80 })).toHaveLength(27);
+    expect(jetid.mono(80)).toHaveLength(34);
+    expect(() => jetid(79)).toThrow(RangeError);
+    expect(() => jetid.timed({ entropy: 1025 })).toThrow(RangeError);
+    expect(() => jetid.mono(NaN)).toThrow(RangeError);
   });
 });

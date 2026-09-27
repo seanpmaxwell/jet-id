@@ -9,15 +9,15 @@ import {
   vi,
 } from 'vitest';
 
-import { resetGeneratorState } from '@src/api/jetid/jetid-mono/generateMonoId';
+import { resetGeneratorState } from '@src/api/jetIdMono/generateMonoId';
 import jetid from '@src/index';
 
 import {
-  MONO_DASH_INDICES,
-  MONO_ID_LENGTH,
+  DASH_INDICES,
+  ID_LENGTH,
   MONO_ID_PATTERN,
   TIMESTAMP_LIMIT,
-  VALID_DUMMY_MONO_ID,
+  VALID_DUMMY_ID,
 } from '@test/_common/constants';
 import { decodeBase32, swap } from '@test/_common/utils';
 
@@ -34,7 +34,7 @@ const COUNTER_LIMIT = 2 ** 20; // 1048576
 // ========================================================================= //
 
 function readId(id: string) {
-  expect(id).toHaveLength(MONO_ID_LENGTH);
+  expect(id).toHaveLength(ID_LENGTH);
   expect(id).toMatch(MONO_ID_PATTERN);
   return {
     epoch: decodeBase32(id.slice(0, 9)),
@@ -63,8 +63,7 @@ describe('jetidMono', () => {
 
         vi.stubGlobal('Buffer', decoder === 'buffer' ? NodeBuffer : undefined);
         try {
-          const module =
-            await import('@src/api/jetid/jetid-mono/generateMonoId');
+          const module = await import('@src/api/jetIdMono/generateMonoId');
           generateMonotonicId = module.default;
           resetGeneratorState = module.resetGeneratorState;
         } finally {
@@ -83,9 +82,7 @@ describe('jetidMono', () => {
           get timeOrigin() {
             return origin;
           },
-          now() {
-            return now;
-          },
+          now: () => now,
         });
       });
 
@@ -97,13 +94,13 @@ describe('jetidMono', () => {
         }
       });
 
-      it('returns a valid id in the 9-6-8-8-9 layout', () => {
+      it('returns a valid id in the 9-6-5-5 layout', () => {
         const id = jetid.mono();
         expect(typeof id).toBe('string');
-        expect(id).toHaveLength(MONO_ID_LENGTH);
+        expect(id).toHaveLength(ID_LENGTH);
         const segments = id.split('-');
         const lengths = segments.map((segment) => segment.length);
-        expect(lengths).toEqual([9, 6, 8, 8, 9]);
+        expect(lengths).toEqual([9, 6, 5, 5]);
       });
 
       it('carries fractional time into the next millisecond', () => {
@@ -303,7 +300,7 @@ describe('ai -> jetid.mono.parse', () => {
     expect(drift).toBeLessThan(1_000);
   });
 
-  it('bumps the counter when two ids share a time bucket', () => {
+  it('orders ids by epoch, then sequence', () => {
     // Generate the whole burst first. Parsing between calls slows the loop
     // past the ~1us bucket width, and then no two ids ever share a bucket.
     const ids: string[] = [];
@@ -311,22 +308,29 @@ describe('ai -> jetid.mono.parse', () => {
       ids.push(jetid.mono());
     }
 
+    // Ids that share a time bucket differ by exactly one counter step.
     let shared = 0;
     let previous = jetid.mono.parse(ids[0]);
     for (let i = 1; i < ids.length; i++) {
       const current = jetid.mono.parse(ids[i]);
-      if (
-        current.epoch === previous.epoch &&
-        current.fraction === previous.fraction
-      ) {
-        expect(current.counter, `id ${i}`).toBe(previous.counter + 1);
-        shared++;
+      if (current.epoch === previous.epoch) {
+        expect(current.sequence, `id ${i}`).toBeGreaterThan(previous.sequence);
+        if (current.sequence === previous.sequence + 1) shared++;
       } else {
-        expect(current.counter, `id ${i}`).toBe(0);
+        expect(current.epoch, `id ${i}`).toBeGreaterThan(previous.epoch);
       }
       previous = current;
     }
     expect(shared).toBeGreaterThan(0);
+  });
+
+  it('ranks the fraction above the counter within sequence', () => {
+    // The last counter value of one fraction sits directly below the first
+    // counter value of the next, so sequence is one contiguous number.
+    const last = jetid.mono.parse('0123456AB-0ZZZZZ-JKMNP-QRSTV');
+    const next = jetid.mono.parse('0123456AB-100000-JKMNP-QRSTV');
+    expect(last.sequence).toBe(32 * 2 ** 20 - 1);
+    expect(next.sequence).toBe(last.sequence + 1);
   });
 
   it('decodes the full 45-bit range', () => {
@@ -338,7 +342,7 @@ describe('ai -> jetid.mono.parse', () => {
         stamp = '0123456789ABCDEFGHJKMNPQRSTVWXYZ'[remaining % 32] + stamp;
         remaining = Math.floor(remaining / 32);
       }
-      const id = stamp + VALID_DUMMY_MONO_ID.slice(9);
+      const id = stamp + VALID_DUMMY_ID.slice(9);
       const parsed = jetid.mono.parse(id);
       expect(parsed.epoch, `epoch ${epoch}`).toBe(epoch);
     }
@@ -347,36 +351,36 @@ describe('ai -> jetid.mono.parse', () => {
   it('reads the epoch from segment one alone', () => {
     // Built by hand rather than from two generated ids, which could land
     // either side of a millisecond boundary and make this flaky.
-    const { epoch } = jetid.mono.parse(VALID_DUMMY_MONO_ID);
-    for (let i = 10; i < MONO_ID_LENGTH; i++) {
-      if (MONO_DASH_INDICES.includes(i)) {
+    const { epoch } = jetid.mono.parse(VALID_DUMMY_ID);
+    for (let i = 10; i < ID_LENGTH; i++) {
+      if (DASH_INDICES.includes(i)) {
         continue;
       }
       const altered = swap(
-        VALID_DUMMY_MONO_ID,
+        VALID_DUMMY_ID,
         i,
-        VALID_DUMMY_MONO_ID[i] === 'Z' ? 'Y' : 'Z',
+        VALID_DUMMY_ID[i] === 'Z' ? 'Y' : 'Z',
       );
       const parsed = jetid.mono.parse(altered);
-      expect(altered).not.toBe(VALID_DUMMY_MONO_ID);
+      expect(altered).not.toBe(VALID_DUMMY_ID);
       expect(parsed.epoch, `index ${i}`).toBe(epoch);
     }
   });
 
   it('reads the sequence from segment two alone', () => {
-    const { fraction, counter } = jetid.mono.parse(VALID_DUMMY_MONO_ID);
-    // Changing a random character must not disturb either field.
-    for (let i = 17; i < MONO_ID_LENGTH; i++) {
-      if (MONO_DASH_INDICES.includes(i)) {
+    const { sequence } = jetid.mono.parse(VALID_DUMMY_ID);
+    // Changing a random character must not disturb the sequence.
+    for (let i = 17; i < ID_LENGTH; i++) {
+      if (DASH_INDICES.includes(i)) {
         continue;
       }
       const altered = swap(
-        VALID_DUMMY_MONO_ID,
+        VALID_DUMMY_ID,
         i,
-        VALID_DUMMY_MONO_ID[i] === 'Z' ? 'Y' : 'Z',
+        VALID_DUMMY_ID[i] === 'Z' ? 'Y' : 'Z',
       );
       const parsed = jetid.mono.parse(altered);
-      expect(parsed, `index ${i}`).toMatchObject({ fraction, counter });
+      expect(parsed.sequence, `index ${i}`).toBe(sequence);
     }
   });
 });

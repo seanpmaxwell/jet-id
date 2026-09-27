@@ -18,16 +18,11 @@
 
     "paths": {
       "@src/*": ["./src/*"],
+      "@cmn/*": ["./src/api/_common/*"],
+      "@Alphabet": ["./src/api/_common/Alphabet"],
       "@test/*": ["./test/*"]
     }
   },
-  "include": [
-    "src",
-    "test",
-    "*.config.ts",
-    "playground",
-    "scripts",
-    "dev-tools/*.ts"
-  ],
+  "include": ["src", "test", "*.config.ts", "playground", "scripts"],
   "exclude": ["node_modules", "lib", "**/*.tmp.js*"]
 }

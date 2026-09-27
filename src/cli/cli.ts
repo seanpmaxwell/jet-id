@@ -1,33 +1,27 @@
 import { once } from 'events';
-import fs from 'fs/promises';
-import path from 'path';
 import { Writable } from 'stream';
-import { fileURLToPath } from 'url';
 
-import jetid from '@src/api/jetid/jetid';
+import jetid from '@src/api/jetid';
+
+// esbuild inlines only `version`, so the bundled CLI never reads the file.
+import { version } from '../../package.json';
 
 import cmdLineParser, { ParsedCmdLineArgs } from './_internal/cmdLineParser';
 import printHelpText from './_internal/printHelpText';
-
-// Injected by esbuild at build time (see scripts/build.ts), so the bundled
-// CLI answers `--version` without touching the filesystem. Absent when the
-// source runs directly under tsx, where `readVersion` takes over.
-declare const __JET_ID_VERSION__: string | undefined;
 
 // ========================================================================= //
 //                                 CONSTANTS                                 //
 // ========================================================================= //
 
-const PACKAGE_NAME = 'jet-id';
-
-// One generator per `--type` value. The plain random id is the default when
-// no type is given, so it is not in the table.
+// One generator per `--type` value, each called with the `--entropy` value.
+// The plain random id is the default when no type is given, so it is not in
+// the table.
 const GENERATORS: Record<
   NonNullable<ParsedCmdLineArgs['type']>,
-  () => string
+  (entropy?: number) => string
 > = {
   mono: jetid.mono,
-  timed: jetid.timed,
+  timed: (entropy) => jetid.timed({ entropy }),
 };
 
 // ========================================================================= //
@@ -45,14 +39,8 @@ async function cli(
   const pArgs = cmdLineParser(args);
 
   // ---- `help/version`
-  if (pArgs.help || pArgs.version) {
-    if (args.length !== 1)
-      throw new Error(
-        'Invalid command-line arguments. Please use the "-h" flag for assistance',
-      );
-    if (pArgs.help) return printHelpText(output);
-    return printVersion(output);
-  }
+  if (pArgs.help) return printHelpText(output);
+  if (pArgs.version) return output.write(`${version}\n`);
 
   // ---- Print the IDs
   return printIds(pArgs, output);
@@ -74,13 +62,13 @@ async function printIds(
   args: ParsedCmdLineArgs,
   output: Writable,
 ): Promise<void> {
-  const { count } = args;
+  const { count, entropy } = args;
   let batch = '';
   // Set the function to use
   const generateFn = args.type === null ? jetid : GENERATORS[args.type];
   // Call it by the count number
   for (let i = 0; i < count; i++) {
-    batch += generateFn() + '\n';
+    batch += generateFn(entropy) + '\n';
     if ((i & 1023) === 1023) {
       if (!output.write(batch) && !(await waitForDrain(output))) return;
       batch = '';
@@ -118,51 +106,6 @@ async function waitForDrain(output: Writable): Promise<boolean> {
       return false;
     }
     throw err;
-  }
-}
-
-/**
- * Check if the version is inlined. If not, use package.json.
- *
- * Used by: {@link cli}
- *
- * @private
- */
-async function printVersion(output: Writable): Promise<boolean> {
-  let version;
-  if (typeof __JET_ID_VERSION__ === 'string') {
-    version = __JET_ID_VERSION__;
-  } else {
-    const thisFilePath = fileURLToPath(import.meta.url);
-    const thisFileDir = path.dirname(thisFilePath);
-    version = await loadVersionFromPkgJson(thisFileDir);
-  }
-  return output.write(`${version}\n`);
-}
-
-/**
- * Look at the package.json and return the version. Only reached when the
- * source runs unbundled (the build inlines `__JET_ID_VERSION__` instead).
- * Walks up from the directory this file lives in.
- *
- * Used by: {@link printVersion}
- *
- * @private
- */
-async function loadVersionFromPkgJson(startDir: string): Promise<string> {
-  let dir = startDir;
-  while (true) {
-    const filePath = path.join(dir, 'package.json');
-    try {
-      const content = await fs.readFile(filePath, 'utf8');
-      const packageJson = JSON.parse(content);
-      if (packageJson.name === PACKAGE_NAME) return packageJson.version;
-    } catch {
-      // Not here, keep walking up
-    }
-    const parent = path.dirname(dir);
-    if (parent === dir) throw new Error('Could not find package.json');
-    dir = parent;
   }
 }
 

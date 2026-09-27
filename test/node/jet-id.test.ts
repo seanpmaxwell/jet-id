@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
-import jetid from '@src/index';
+import jetid, { TimedIdOptions } from '@src/index';
 
 import {
   DASH_INDICES,
@@ -23,10 +23,10 @@ describe('jetid()', () => {
     expect(id).toHaveLength(ID_LENGTH);
   });
 
-  it('uses the 9-5-5-6 dash layout', () => {
+  it('uses the 9-6-5-5 dash layout', () => {
     const segments = jetid().split('-');
     const lengths = segments.map((segment) => segment.length);
-    expect(lengths).toEqual([9, 5, 5, 6]);
+    expect(lengths).toEqual([9, 6, 5, 5]);
   });
 
   it('only uses Crockford base32 characters', () => {
@@ -108,32 +108,77 @@ describe('jetid.test', () => {
       '0123456AB-CDEFGH-JKMN-PQRSTV', // 9-6-4-6
       '0123456AB-CDEFG-HJKMNPQRSTVW', // 9-5-12
     ];
-
     for (const value of layouts) {
       const res = jetid.test(value);
       expect(res, value).toBe(false);
     }
   });
+
+  // it('', () => {
+  //   const id = jetid.timed({ entropy: 100 });
+  // });
 });
 
 // ---- `.timed`
 describe('jetid.timed', () => {
-  it('returns a valid id in the 9-5-5-6 layout', () => {
+  it('uses defaults for omitted, empty, and undefined options', () => {
+    const clock = vi.spyOn(Date, 'now').mockReturnValue(123456789);
+    try {
+      for (const options of [
+        undefined,
+        {},
+        { epoch: undefined, entropy: undefined },
+      ]) {
+        const id = jetid.timed(options);
+        expect(id).toHaveLength(28);
+        expect(jetid.timed.parse(id)).toBe(123456789);
+      }
+    } finally {
+      clock.mockRestore();
+    }
+  });
+
+  it('allows entropy without an epoch and leaves the options unchanged', () => {
+    const clock = vi.spyOn(Date, 'now').mockReturnValue(123456789);
+    try {
+      for (const entropy of [80, 81, 128, 1024]) {
+        const options: TimedIdOptions = Object.freeze({ entropy });
+        const id = jetid.timed(options);
+        expect(jetid.timed.parse(id)).toBe(123456789);
+        expect(id.split('-').slice(1).join('')).toHaveLength(
+          Math.ceil(entropy / 5),
+        );
+        expect(options).toEqual({ entropy });
+      }
+    } finally {
+      clock.mockRestore();
+    }
+  });
+
+  it('rejects positional timestamps and non-object options', () => {
+    for (const options of [0, 123456789, null, '80', true, []]) {
+      expect(() => jetid.timed(options as unknown as TimedIdOptions)).toThrow(
+        TypeError,
+      );
+    }
+  });
+
+  it('returns a valid id in the 9-6-5-5 layout', () => {
     const id = jetid.timed();
     expect(id).toHaveLength(ID_LENGTH);
     const segments = id.split('-');
     const lengths = segments.map((segment) => segment.length);
-    expect(lengths).toEqual([9, 5, 5, 6]);
+    expect(lengths).toEqual([9, 6, 5, 5]);
     const res = jetid.test(id);
     expect(res).toBe(true);
   });
 
   it('encodes the epoch in the first nine characters', () => {
-    const zeroId = jetid.timed(0);
+    const zeroId = jetid.timed({ epoch: 0 });
     const zeroStamp = zeroId.slice(0, 9);
     expect(zeroStamp).toBe('000000000');
 
-    const maxId = jetid.timed(TIMESTAMP_LIMIT - 1);
+    const maxId = jetid.timed({ epoch: TIMESTAMP_LIMIT - 1 });
     const maxStamp = maxId.slice(0, 9);
     expect(maxStamp).toBe('ZZZZZZZZZ');
   });
@@ -147,7 +192,9 @@ describe('jetid.timed', () => {
 
   it('rejects timestamps it cannot encode', () => {
     for (const epoch of [-1, 1.5, NaN, TIMESTAMP_LIMIT]) {
-      expect(() => jetid.timed(epoch), `epoch ${epoch}`).toThrow(RangeError);
+      expect(() => jetid.timed({ epoch }), `epoch ${epoch}`).toThrow(
+        RangeError,
+      );
     }
   });
 
@@ -164,7 +211,7 @@ describe('jetid.timed', () => {
 describe('jetid.timed.parse', () => {
   it('round-trips a timestamp', () => {
     for (const epoch of [0, 1, 1_433_314_800_000, TIMESTAMP_LIMIT - 1]) {
-      const id = jetid.timed(epoch);
+      const id = jetid.timed({ epoch });
       const parsed = jetid.timed.parse(id);
       expect(parsed, `epoch ${epoch}`).toBe(epoch);
     }
@@ -172,7 +219,7 @@ describe('jetid.timed.parse', () => {
 
   it('ignores the random suffix', () => {
     const epoch = Date.now();
-    const ids = [jetid.timed(epoch), jetid.timed(epoch)];
+    const ids = [jetid.timed({ epoch }), jetid.timed({ epoch })];
     expect(ids[0]).not.toBe(ids[1]);
     const first = jetid.timed.parse(ids[0]);
     const second = jetid.timed.parse(ids[1]);
@@ -181,7 +228,7 @@ describe('jetid.timed.parse', () => {
 
   it('accepts lowercase', () => {
     const epoch = 1_433_314_800_000;
-    const id = jetid.timed(epoch);
+    const id = jetid.timed({ epoch });
     const lower = id.toLowerCase();
     const parsed = jetid.timed.parse(lower);
     expect(parsed).toBe(epoch);
