@@ -4,7 +4,7 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/seanpmaxwell/jet-id/ci.yml?style=flat-square&logo=github&logoColor=white&label=CI)](https://github.com/seanpmaxwell/jet-id/actions/workflows/ci.yml)
 [![license](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](./LICENSE)
 
-An extremely fast unique ID generator for JavaScript and TypeScript, with optional timestamping and sorting.
+An extremely fast unique ID generator for JavaScript and TypeScript, with optional timestamping/sorting and entropy.
 
 ## Quick start
 
@@ -46,9 +46,10 @@ A plain ID contains 25 random Crockford base32 characters, grouped as `9-6-5-5`.
 - **Small:** 2.8 kB minified + gzipped, with zero runtime dependencies.
 - **TypeScript-ready:** Includes type declarations.
 - **Portable:** Works in Node.js and modern browsers.
-- **Flexible:** Choose random IDs, timestamped IDs, or strictly ordered IDs.
-- **Configurable randomness:** Defaults are 125 random bits for `jetid()`, 80 for `.timed()`, and 50 for `.mono()`.
-  - Choose a minimum with the optional entropy parameter. For comparison, UUID v4 has 122.
+- **Flexible:**
+  - **Timestamping/ordering:** Choose random IDs, timestamped IDs, or strictly ordered (monotonic) IDs.
+  - **Entropy:** Defaults are 125 random bits for `jetid()`, 80 for `.timed()`, and 50 for `.mono()`.
+    - Choose a minimum with the optional entropy parameter. For comparison, UUID v4 has 122.
 - **Simple API:** Generate IDs, validate their format, and extract encoded timestamps with a few functions.
 
 <p align="center">* * *</p>
