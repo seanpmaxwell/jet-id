@@ -243,7 +243,7 @@ jet-id -t timed -c 5 -e 160  # Five timestamped IDs, each with at least 160 rand
 | `--version` | `-v` | Show the installed version. Must be the only argument. |
 | `--count <n>` | `-c` | Number of IDs to print. Defaults to `1`. |
 | `--type <type>` | `-t` | Generator to use: `timed` or `mono`. Omit for plain random IDs. Values are case-insensitive. |
-| `--entropy <bits>` | `-e` | Minimum random bits per ID: an integer from `80` to `1024`. Omit to keep each generator's default. See [Entropy](#-entropy). |
+| `--entropy` | `-e` | Minimum random bits per ID: an integer from `80` to `1024`. See [Entropy](#-entropy). |
 
 <p align="center">· · ·</p>
 
