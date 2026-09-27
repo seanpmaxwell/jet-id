@@ -9,13 +9,9 @@ An extremely fast unique ID generator for JavaScript and TypeScript, with option
 ## Quick start
 
 ```sh
-npm install jet-id
-```
+npx jet-id
 
-```ts
-import jetid from 'jet-id';
-
-jetid(); // 'DXJK0BT3V-Y567B6-EPJ0K-R27NZ'
+# outputs 'DXJK0BT3V-Y567B6-EPJ0K-R27NZ'
 ```
 
 A plain ID contains 25 random Crockford base32 characters, grouped as `9-6-5-5`. Including the three dashes, each ID is 28 characters long.
