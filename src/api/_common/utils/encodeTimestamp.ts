@@ -1,14 +1,8 @@
-import { ALPHABET, PAIRS } from './alphabet';
+import { ALPHABET, PAIRS } from '@Alphabet';
 
 // ========================================================================= //
 //                                 CONSTANTS                                 //
 // ========================================================================= //
-
-// Nine Crockford base32 characters hold 45 bits of milliseconds, which runs
-// to the year 3084. Both timestamped formats use this width, so a layout's
-// first segment must be TIMESTAMP_CHARS long.
-export const TIMESTAMP_CHARS = 9;
-export const TIMESTAMP_LIMIT = 32 ** TIMESTAMP_CHARS; // 2^45
 
 // The 45 bits split into a high 30 (six characters, cached because they only
 // change every 32,768 ms) and a low 15 (three characters, re-encoded per
@@ -41,7 +35,7 @@ let lastPrefix = '';
  * `[0, TIMESTAMP_LIMIT)`; this does no validation so as to stay off the
  * generators' hot paths.
  */
-export function encodeTimestamp(epoch: number): string {
+function encodeTimestamp(epoch: number): string {
   if (epoch === lastEpoch) {
     return lastTimestamp;
   }
@@ -60,3 +54,9 @@ export function encodeTimestamp(epoch: number): string {
   lastEpoch = epoch;
   return lastTimestamp;
 }
+
+// ========================================================================= //
+//                                  EXPORT                                   //
+// ========================================================================= //
+
+export default encodeTimestamp;

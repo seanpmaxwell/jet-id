@@ -1,14 +1,14 @@
 import { randomUUID } from 'crypto';
+import logger from 'jet-logger';
 import { customAlphabet, nanoid } from 'nanoid';
 import { cpus } from 'os';
 import { performance } from 'perf_hooks';
 import { monotonicFactory, ulid } from 'ulid';
 import { v4 as uuidv4 } from 'uuid';
 
-import logger from '@src/utils/logger';
-import onInit from '@src/utils/onInit';
+import jetid from '@src/index';
 
-import jetid from '../src';
+import onInit from '../scripts/onInit';
 
 // ========================================================================= //
 //                                 CONSTANTS                                 //
@@ -64,7 +64,7 @@ onInit.sync(() => {
       bits: 125,
     },
     {
-      name: 'Nano ID: Crockford, 9-5-5-6',
+      name: 'Nano ID: Crockford, 9-6-5-5',
       generate: nanoidFormatted,
       chars: 28,
       bits: 125,
@@ -72,8 +72,8 @@ onInit.sync(() => {
     {
       name: 'jetid.mono()',
       generate: () => jetid.mono(),
-      chars: 44,
-      bits: 125,
+      chars: 28,
+      bits: 50,
     },
     {
       name: 'ulid()',
@@ -170,7 +170,7 @@ onInit.sync(() => {
   );
 
   // Keep diagnostic output separate from the Markdown.
-  logger.error('Checksum:', checksum);
+  logger.imp('Checksum:', checksum);
 }, 'benchmarks');
 
 // ========================================================================= //
@@ -185,11 +185,11 @@ function nanoidFormatted(): string {
   return (
     id.slice(0, 9) +
     '-' +
-    id.slice(10, 15) +
+    id.slice(9, 15) +
     '-' +
     id.slice(15, 20) +
     '-' +
-    id.slice(26)
+    id.slice(20)
   );
 }
 

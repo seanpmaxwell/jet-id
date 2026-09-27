@@ -4,7 +4,7 @@ import util from 'util';
 //                                 CONSTANTS                                 //
 // ========================================================================= //
 
-const ShouldBeFirstSet = new Set(['--help', '-h', '--version', '-v']);
+const HelperFlagsSet = new Set(['--help', '-h', '--version', '-v']);
 const TypeValuesSet = new Set(['mono', 'timed']);
 
 const PARSE_ARG_OPTIONS = {
@@ -12,6 +12,7 @@ const PARSE_ARG_OPTIONS = {
   version: { type: 'boolean', short: 'v' },
   count: { type: 'string', short: 'c' },
   type: { type: 'string', short: 't' },
+  entropy: { type: 'string', short: 'e' },
 } as const;
 
 // ========================================================================= //
@@ -24,6 +25,9 @@ export interface ParsedCmdLineArgs {
   version: boolean;
   count: number;
   type: 'mono' | 'timed' | null;
+  // `undefined` rather than `null`: it passes straight to the generators,
+  // which read it as an omitted entropy and keep their default layout.
+  entropy: number | undefined;
 }
 
 // ========================================================================= //
@@ -45,11 +49,13 @@ function cmdLineParser(args: string[]): ParsedCmdLineArgs {
   });
 
   // ---- `help`/`version`
-  // Validate helpers (`args[0]` may be in the `--flag=value` form)
-  const firstFlag = args[0]?.split('=')[0];
-  if ((pArgs.help || pArgs.version) && !ShouldBeFirstSet.has(firstFlag)) {
+  // Comparing the raw argument also rejects short groups such as `-hv`.
+  if (
+    (pArgs.help || pArgs.version) &&
+    (args.length !== 1 || !HelperFlagsSet.has(args[0]))
+  ) {
     throw new Error(
-      'If specified, the flags [--version,--help] should come first',
+      'The --help (-h) and --version (-v) flags must be the only argument',
     );
   }
 
@@ -75,12 +81,28 @@ function cmdLineParser(args: string[]): ParsedCmdLineArgs {
     );
   }
 
+  // ---- `entropy`
+  // The generators accept fractional bits and round them up, but a flag value
+  // like "80.5" is more likely a typo than a request, so require an integer.
+  // Checking here also fails before any output instead of on the first id.
+  const entropy =
+    pArgs.entropy === undefined ? undefined : Number(pArgs.entropy);
+  if (
+    entropy !== undefined &&
+    (!Number.isInteger(entropy) || entropy < 80 || entropy > 1024)
+  ) {
+    throw new Error(
+      `The --entropy flag must be an integer from 80 to 1024: received "${pArgs.entropy}"`,
+    );
+  }
+
   // ---- Return
   return {
     help: !!pArgs.help,
     version: !!pArgs.version,
     count,
     type: respType as ParsedCmdLineArgs['type'],
+    entropy,
   };
 }
 

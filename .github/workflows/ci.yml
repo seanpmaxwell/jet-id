@@ -35,8 +35,7 @@ jobs:
           node-version: ${{ matrix.node }}
           cache: npm
 
-      # `--ignore-scripts` skips the `prepare` hook so the build below is its
-      # own step with its own failure message.
+      # `--ignore-scripts` keeps dependency install scripts from running in CI.
       - run: npm ci --ignore-scripts
 
       - run: npm run typecheck

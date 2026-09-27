@@ -1,31 +1,24 @@
-import generateMonoId from './generateMonoId';
-import parseMonoId from './parseMonoId';
-import validateMonoId from './validateMonoId';
+import generateTimedId, { TimedIdOptions } from './generateTimedId';
+import parseTimedId from './parseTimedId';
 
 // ========================================================================= //
 //                                   TYPES                                   //
 // ========================================================================= //
 
-interface jetidMono {
-  (): string;
-  test(id: unknown): boolean;
-  parse(id: unknown): {
-    epoch: number;
-    fraction: number;
-    counter: number;
-  };
+interface jetidTimed {
+  (options?: TimedIdOptions): string;
+  parse(id: unknown): number;
 }
 
 // ========================================================================= //
 //                                   EXEC                                    //
 // ========================================================================= //
 
-const jetidMono = generateMonoId as jetidMono;
-jetidMono.test = validateMonoId;
-jetidMono.parse = parseMonoId;
+const jetidTimed = generateTimedId as jetidTimed;
+jetidTimed.parse = parseTimedId;
 
 // ========================================================================= //
 //                                  EXPORT                                   //
 // ========================================================================= //
 
-export default jetidMono;
+export default jetidTimed;

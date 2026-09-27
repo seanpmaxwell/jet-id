@@ -29,8 +29,8 @@ for (let i = 0; i < ALPHABET.length; i++) {
 describe('character distribution', () => {
   // One pass over the sample feeds every assertion below.
   const counts = new Int32Array(ID_LENGTH * ALPHABET.length);
-  let misplacedDash = -1; // A dash outside 6/13/21.
-  let missingDash = -1; // Something other than a dash at 6/13/21.
+  let misplacedDash = -1; // A dash outside 9/16/22.
+  let missingDash = -1; // Something other than a dash at 9/16/22.
   let nonAlphabet = -1; // A character outside the alphabet.
   let wrongLength = -1;
 
@@ -74,11 +74,11 @@ describe('character distribution', () => {
     expect(wrongLength).toBe(-1);
   });
 
-  it('never emits a dash outside indices 9, 15 and 21', () => {
+  it('never emits a dash outside indices 9, 16 and 22', () => {
     expect(misplacedDash).toBe(-1);
   });
 
-  it('always emits a dash at indices 9, 15 and 21', () => {
+  it('always emits a dash at indices 9, 16 and 22', () => {
     expect(missingDash).toBe(-1);
   });
 
@@ -127,5 +127,41 @@ describe('character distribution', () => {
       worst.chi2,
       `worst position ${worst.index}: chi2 = ${worst.chi2.toFixed(2)} (df 31, critical ${CHI2_CRITICAL})`,
     ).toBeLessThan(CHI2_CRITICAL);
+  });
+});
+
+describe('random suffix distribution', () => {
+  it.each([
+    {
+      name: 'timed default',
+      generate: () => jetid.timed({ epoch: 0 }),
+      start: 1,
+    },
+    { name: 'mono default', generate: () => jetid.mono(), start: 2 },
+    { name: 'random expanded', generate: () => jetid(1024), start: 0 },
+    {
+      name: 'timed expanded',
+      generate: () => jetid.timed({ epoch: 0, entropy: 1024 }),
+      start: 1,
+    },
+    { name: 'mono expanded', generate: () => jetid.mono(1024), start: 2 },
+  ])('$name is uniform at every random position', ({ generate, start }) => {
+    const samples = 20000;
+    const chars = generate().split('-').slice(start).join('').length;
+    const counts = new Uint32Array(chars * 32);
+    for (let sample = 0; sample < samples; sample++) {
+      const id = generate().split('-').slice(start).join('');
+      for (let c = 0; c < chars; c++)
+        counts[c * 32 + SYMBOL[id.charCodeAt(c)]]++;
+    }
+    const expected = samples / 32;
+    for (let c = 0; c < chars; c++) {
+      let chi2 = 0;
+      for (let symbol = 0; symbol < 32; symbol++) {
+        const diff = counts[c * 32 + symbol] - expected;
+        chi2 += (diff * diff) / expected;
+      }
+      expect(chi2, `random position ${c}`).toBeLessThan(CHI2_CRITICAL);
+    }
   });
 });

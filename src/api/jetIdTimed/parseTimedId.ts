@@ -1,7 +1,7 @@
-import { CHAR_VALUES } from '../_common/alphabet';
+import { decodeChars } from '@Alphabet';
 
-import { SEGMENT_1_LENGTH } from './_internal';
-import validateId from './validateId';
+import { SEGMENT_1_LENGTH } from '@cmn/constants/segments';
+import validateId from '@cmn/utils/validateId';
 
 // ========================================================================= //
 //                                 FUNCTIONS                                 //
@@ -16,14 +16,7 @@ import validateId from './validateId';
  */
 function parseTimedId(id: unknown): number {
   if (!validateId(id)) throw new TypeError('Invalid timed ID.');
-  // Arithmetic preserves the full 45-bit timestamp.
-  // Bitwise operations would truncate it to 32 bits.
-  let epoch = 0;
-  for (let i = 0; i < SEGMENT_1_LENGTH; i++) {
-    epoch = epoch * 32 + CHAR_VALUES[id.charCodeAt(i)];
-  }
-  // Return
-  return epoch;
+  return decodeChars(id, 0, SEGMENT_1_LENGTH);
 }
 
 // ========================================================================= //

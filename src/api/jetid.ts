@@ -1,21 +1,17 @@
-import generateId from './generateId';
-import generateTimedId from './generateTimedId';
-import parseTimedId from './parseTimedId';
-import validateId from './validateId';
+import validateId from '@cmn/utils/validateId';
 
-import jetidMono from './jetid-mono/api';
+import jetidMono from './jetIdMono/jetIdMono';
+import generateId from './jetIdRaw/generateId';
+import jetIdTimed from './jetIdTimed/jetIdTimed';
 
 // ========================================================================= //
 //                                   TYPES                                   //
 // ========================================================================= //
 
 interface jetid {
-  (): string;
+  (entropy?: number): string;
   test(id: unknown): boolean;
-  timed: {
-    (epoch?: number): string;
-    parse(id: unknown): number;
-  };
+  timed: typeof jetIdTimed;
   mono: jetidMono;
 }
 
@@ -24,9 +20,8 @@ interface jetid {
 // ========================================================================= //
 
 const jetid = generateId as jetid;
-jetid.timed = generateTimedId as jetid['timed'];
-jetid.timed.parse = parseTimedId;
 jetid.test = validateId;
+jetid.timed = jetIdTimed;
 jetid.mono = jetidMono;
 
 // ========================================================================= //

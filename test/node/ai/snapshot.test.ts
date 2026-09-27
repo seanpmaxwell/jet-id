@@ -23,13 +23,13 @@ import v8 from 'node:v8';
 
 import jetid from '@src/index';
 
-const beforeSnapshot = [jetid(), jetid(), jetid.mono()];
+const beforeSnapshot = [jetid(), jetid(), jetid.mono(), jetid.timed({ epoch: 0 }), jetid(1024), jetid.timed({ epoch: 0, entropy: 1024 }), jetid.mono(1024), jetid(80), jetid.timed({ epoch: 0, entropy: 80 }), jetid.mono(80)];
 
 v8.startupSnapshot.setDeserializeMainFunction(() => {
   console.log(
     JSON.stringify({
       beforeSnapshot,
-      afterRestore: [jetid(), jetid(), jetid.mono()],
+      afterRestore: [jetid(), jetid(), jetid.mono(), jetid.timed({ epoch: 0 }), jetid(1024), jetid.timed({ epoch: 0, entropy: 1024 }), jetid.mono(1024), jetid(80), jetid.timed({ epoch: 0, entropy: 80 }), jetid.mono(80)],
     }),
   );
 });
@@ -96,13 +96,13 @@ describe('v8 startup snapshot', () => {
   /**
    * Restore the snapshot in a fresh process and read back what it generated.
    */
-  function restore(): SnapshotRun {
+  const restore = (): SnapshotRun => {
     const out = execFileSync(process.execPath, ['--snapshot-blob', blob], {
       cwd: dir,
       encoding: 'utf8',
     });
     return JSON.parse(out) as SnapshotRun;
-  }
+  };
 
   // Catches a callback that rewinds the pool cursor without discarding the
   // saved characters, which would hand out the snapshot's ids verbatim. It
@@ -116,8 +116,8 @@ describe('v8 startup snapshot', () => {
       return;
     }
     const run = restore();
-    expect(run.beforeSnapshot).toHaveLength(3);
-    expect(run.afterRestore).toHaveLength(3);
+    expect(run.beforeSnapshot).toHaveLength(10);
+    expect(run.afterRestore).toHaveLength(10);
 
     const baked = new Set(run.beforeSnapshot);
     for (const id of run.afterRestore) {
