@@ -4,7 +4,7 @@ import { SEGMENT_2_LENGTH } from '@cmn/constants/segments';
 //                                 CONSTANTS                                 //
 // ========================================================================= //
 
-// ---- Monotonic sequence
+// --- Monotonic sequence ---
 // The second segment splits into two fractional-time characters (10 bits)
 // and four counter characters (20 bits). The fraction sits above the
 // counter, so a later time reading always sorts after every counter value

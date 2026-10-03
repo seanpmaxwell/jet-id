@@ -7,7 +7,7 @@ import cli from './cli';
 // ========================================================================= //
 
 {
-  // ---- Safe exit
+  // --- Safe exit ---
   // Keep this listener for the process lifetime: a small write can fail after
   // cli() resolves. A closed reader (e.g. `head`) means no more output is
   // wanted.
@@ -18,7 +18,7 @@ import cli from './cli';
     process.exit(1);
   });
 
-  // ---- Call core logic
+  // --- Call core logic ---
   const args = process.argv.slice(2);
   try {
     await cli(args);

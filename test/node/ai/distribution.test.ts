@@ -16,7 +16,7 @@ const SAMPLES = 2_000_000;
 // more than this, while a healthy CSPRNG will not cross it in practice.
 const CHI2_CRITICAL = 121.9;
 
-// ---- Symbol index per ASCII code, -1 for anything not in the alphabet.
+// --- Symbol index per ASCII code, -1 for anything not in the alphabet. ---
 const SYMBOL = new Int8Array(128).fill(-1);
 for (let i = 0; i < ALPHABET.length; i++) {
   SYMBOL[ALPHABET.charCodeAt(i)] = i;
@@ -69,7 +69,7 @@ describe('character distribution', () => {
     }
   }
 
-  // ---- Layout: the assertions a shape test on a handful of IDs would miss
+  // --- Layout: the assertions a shape test on a handful of IDs would miss ---
   it(`produces ${SAMPLES.toLocaleString()} ids of the right length`, () => {
     expect(wrongLength).toBe(-1);
   });
@@ -86,7 +86,7 @@ describe('character distribution', () => {
     expect(nonAlphabet).toBe(-1);
   });
 
-  // ---- Uniformity
+  // --- Uniformity ---
   it('uses all 32 symbols at every alphabet position', () => {
     for (let i = 0; i < ID_LENGTH; i++) {
       if (isDashIndex[i]) {

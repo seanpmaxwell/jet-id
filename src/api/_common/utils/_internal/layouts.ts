@@ -18,7 +18,7 @@ export interface IdLayout {
 //                                   EXEC                                    //
 // ========================================================================= //
 
-// ---- Expected layout
+// --- Expected layout ---
 // Every position needs an alphabet character, except the three dash spots.
 // Values are CHAR_CLASS entries: 1 for a character, 2 for the dash.
 const LAYOUT = new Uint8Array(ID_LENGTH).fill(1);

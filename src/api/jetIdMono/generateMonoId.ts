@@ -17,12 +17,12 @@ import {
 //                                 CONSTANTS                                 //
 // ========================================================================= //
 
-// ---- Monotonic sequence
+// --- Monotonic sequence ---
 // The fraction/counter split lives in _internal. Keep it aligned with the
 // direct character encoding below.
 const COUNTER_ZERO = ALPHABET[0].repeat(COUNTER_CHARS); // counter === 0
 
-// ---- Character pool
+// --- Character pool ---
 // Only the random tail is pooled: "-xxxxx-xxxxx" (50 random bits).
 // Each tail is four-byte aligned; no padding is needed.
 const TAIL_LENGTH = 12;
@@ -43,14 +43,14 @@ const {
   random,
 } = createPool(TAIL_LENGTH, TAIL_LENGTH, RANDOM_WORDS_PER_SLOT, writeChunk);
 
-// ---- Monotonic state
+// --- Monotonic state ---
 // The last encoded time bucket and how many IDs it has issued. The encoded
 // timestamp string itself is memoized inside `encodeTimestamp`.
 let lastEpoch = -1;
 let lastFraction = -1;
 let lastCounter = 0;
 
-// ---- Snapshot safety
+// --- Snapshot safety ---
 onSnapshotRestore(resetGeneratorState);
 
 // ========================================================================= //

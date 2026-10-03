@@ -71,8 +71,20 @@ jetid(80); // '1TNHVSP7A-4VMBKW-2J3SX' — 22 characters, 100 random bits (layou
 jetid.timed({ entropy: 256 }); // current timestamp with at least 256 random bits
 ```
 
-<details>
-<summary>Entropy in detail</summary>
+| Requested bits | Actual bits (random mode) | Random length | Timed length | Mono length | Random IDs for a 50% collision chance |
+|---------------:|--------------------------:|--------------:|-------------:|------------:|-------------------------------------:|
+|             80 |                       100 |            22 |           27 |          34 |                         ≈ 1.3 × 10¹⁵ |
+|            100 |                       100 |            22 |           32 |          38 |                         ≈ 1.3 × 10¹⁵ |
+|            125 |                       125 |            27 |           37 |          44 |                         ≈ 7.7 × 10¹⁸ |
+|            128 |                       130 |            29 |           38 |          45 |                         ≈ 4.3 × 10¹⁹ |
+|            160 |                       160 |            35 |           45 |          52 |                         ≈ 1.4 × 10²⁴ |
+|            256 |                       260 |            57 |           67 |          74 |                         ≈ 1.6 × 10³⁹ |
+
+> The final column uses the birthday bound for independent, uniformly random IDs: approximately `1.1774 × 2^(b/2)` IDs, where `b` is actual random bits. A 50% collision chance is a comparison threshold, not a recommended usage limit.
+
+---
+
+### Id formating explained
 
 The first two segments are always 9 and 6 characters, so timed and mono IDs keep their timestamp and sequence in the same positions at every length. IDs have at least three segments, and each later segment contains 5–10 characters.
 
@@ -83,8 +95,6 @@ The string length generated is the minimum needed to meet the requested entropy 
 ```ts
 jetid.mono(125); // '1M3GAYGPN-M80000-CMN58V0Y8W-DNP1JJJ2-VT8ENW7'
 ```
-
-</details>
 
 <p align="center">* * *</p>
 

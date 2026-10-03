@@ -30,8 +30,6 @@
   "scripts": {
     "benchmarks": "npm run build && tsx playground/benchmark.ts",
     "build": "tsx scripts/build.ts",
-    "commit": "npm run format && git add -A && git commit -m \"dev commit\"",
-    "commit:push": "npm run commit && git push",
     "install:clean": "rm -rf node_modules && rm -f package-lock.json && npm i",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
@@ -44,7 +42,9 @@
     "test": "vitest run",
     "test:node": "vitest run test/node",
     "test:browser": "vitest run --config vitest.browser.config.ts",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "_local:commit": "tsx --tsconfig ../my-tools/tsconfig.json ../my-tools/src/workflows/commit/run.ts",
+    "_local:squash-history": "tsx --tsconfig ../my-tools/tsconfig.json ../my-tools/src/workflows/squash-history/run.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

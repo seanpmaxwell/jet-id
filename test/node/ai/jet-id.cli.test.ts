@@ -6,7 +6,7 @@ import cmdLineParser from '@src/cli/_internal/cmdLineParser';
 //                                   TESTS                                   //
 // ========================================================================= //
 
-// ---- Defaults
+// --- Defaults ---
 describe('cmdLineParser', () => {
   it('defaults to one random id', () => {
     const parsed = cmdLineParser([]);

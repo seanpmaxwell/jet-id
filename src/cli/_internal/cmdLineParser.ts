@@ -48,7 +48,7 @@ function cmdLineParser(args: string[]): ParsedCmdLineArgs {
     options: PARSE_ARG_OPTIONS,
   });
 
-  // ---- `help`/`version`
+  // --- `help`/`version` ---
   // Comparing the raw argument also rejects short groups such as `-hv`.
   if (
     (pArgs.help || pArgs.version) &&
@@ -59,7 +59,7 @@ function cmdLineParser(args: string[]): ParsedCmdLineArgs {
     );
   }
 
-  // ---- `count`
+  // --- `count` ---
   // Validate `count`. Without this, a non-numeric or zero count prints nothing
   // at all, which reads like the command silently did nothing.
   const count = pArgs.count === undefined ? 1 : Number(pArgs.count);
@@ -69,7 +69,7 @@ function cmdLineParser(args: string[]): ParsedCmdLineArgs {
     );
   }
 
-  // ---- `type`
+  // --- `type` ---
   // Validate the type flag
   const respType = pArgs.type === undefined ? null : pArgs.type.toLowerCase();
   if (respType !== null && !TypeValuesSet.has(respType)) {
@@ -81,7 +81,7 @@ function cmdLineParser(args: string[]): ParsedCmdLineArgs {
     );
   }
 
-  // ---- `entropy`
+  // --- `entropy` ---
   // The generators accept fractional bits and round them up, but a flag value
   // like "80.5" is more likely a typo than a request, so require an integer.
   // Checking here also fails before any output instead of on the first id.
@@ -96,7 +96,7 @@ function cmdLineParser(args: string[]): ParsedCmdLineArgs {
     );
   }
 
-  // ---- Return
+  // --- Return ---
   return {
     help: !!pArgs.help,
     version: !!pArgs.version,

@@ -289,7 +289,7 @@ describe('jetidMono', () => {
   }
 });
 
-// ---- `jetid.mono.parse`
+// --- `jetid.mono.parse` ---
 describe('ai -> jetid.mono.parse', () => {
   beforeEach(resetGeneratorState);
 

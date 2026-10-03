@@ -6,7 +6,7 @@ import jetid from '@src/index';
 //                                   TESTS                                   //
 // ========================================================================= //
 
-// ---- Environment
+// --- Environment ---
 describe('browser environment', () => {
   it('runs in a real browser', () => {
     // Reached through `globalThis` so the project doesn't need the DOM lib
@@ -28,7 +28,7 @@ describe('browser environment', () => {
   });
 });
 
-// ---- `default jetid`
+// --- `default jetid` ---
 describe('jetid() in the browser', () => {
   it('returns a string of 28 characters', () => {
     const id = jetid();
@@ -56,7 +56,7 @@ describe('jetid() in the browser', () => {
   });
 });
 
-// ---- `jetid.mono`
+// --- `jetid.mono` ---
 describe('jetid.mono() in the browser', () => {
   // `jetidMono` keeps its own pool with its own decode branch, and is the only
   // part of the API that needs `performance.timeOrigin`. Both of those are

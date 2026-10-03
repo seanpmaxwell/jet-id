@@ -15,7 +15,7 @@ const LOW_DIVISOR = 32 ** LOW_CHARS; // 32768
 //                                   EXEC                                    //
 // ========================================================================= //
 
-// ---- Memo
+// --- Memo ---
 // The encoding is a pure function of the epoch, so this cache is shared by
 // every generator and never needs resetting, snapshots included.
 let lastEpoch = -1;
