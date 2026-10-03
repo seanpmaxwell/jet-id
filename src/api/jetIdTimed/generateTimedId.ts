@@ -14,7 +14,7 @@ import resolveEntropy from '@cmn/utils/resolveEntropy';
 //                                 CONSTANTS                                 //
 // ========================================================================= //
 
-// ---- Character pool
+// --- Character pool ---
 // Only the suffix is pooled: "-xxxxxx-xxxxx-xxxxx".
 // Add one internal padding byte so each slot can be written four bytes
 // at a time. That padding byte is never included in a returned ID.

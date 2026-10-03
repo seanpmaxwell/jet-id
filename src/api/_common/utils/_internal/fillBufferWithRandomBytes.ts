@@ -2,14 +2,14 @@
 //                                   EXEC                                    //
 // ========================================================================= //
 
-// ---- Platform check
+// --- Platform check ---
 // The pools write 32-bit words and read them back as bytes, which only
 // lines up on a little-endian machine.
 if (new Uint8Array(new Uint16Array([1]).buffer)[0] !== 1) {
   throw new Error('jet-id requires a little-endian platform.');
 }
 
-// ---- `fillBufferWithRandomBytes`
+// --- `fillBufferWithRandomBytes` ---
 // The annotation is deliberate: `nodeCrypto` is `any`, so without it the
 // inferred type is `any` too and every call site loses its check.
 const fillBufferWithRandomBytes: (buffer: Uint8Array) => unknown = (() => {

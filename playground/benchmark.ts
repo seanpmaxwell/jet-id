@@ -135,7 +135,7 @@ onInit.sync(() => {
 
   // ============================ Print Results ============================ //
 
-  // ---- Specs
+  // --- Specs ---
   logger.info('# ID generation benchmark\n');
   logger.info(
     `Node ${process.version}; V8 ${process.versions.v8};`,
@@ -147,7 +147,7 @@ onInit.sync(() => {
     `after ${WARMUP_MS} ms warmup per generator.\n`,
   );
 
-  // ---- Print a Markdown-friendly table
+  // --- Print a Markdown-friendly table ---
   logger.info(
     '| Generator | Characters | Random bits | Median ops/sec | ns/ID | Relative throughput |',
   );
@@ -162,7 +162,7 @@ onInit.sync(() => {
     );
   }
 
-  // ---- Final Message
+  // --- Final Message ---
   logger.info('\nRelative throughput uses jetid() as 1.00x; higher is faster.');
   logger.info(
     'Measurements include generation and one character read per ID.',

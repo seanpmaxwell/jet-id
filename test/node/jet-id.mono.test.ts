@@ -17,7 +17,7 @@ import { decodeBase32, swap } from '@test/_common/utils';
 //                                   TESTS                                   //
 // ========================================================================= //
 
-// ---- `jetidMono`
+// --- `jetidMono` ---
 describe('jetid.mono()', () => {
   // The sequence lives in module state, so each case starts from a fresh
   // one instead of inheriting the counter the previous case left behind.
@@ -74,7 +74,7 @@ describe('jetid.mono()', () => {
   });
 });
 
-// ---- `jetid.test`
+// --- `jetid.test` ---
 describe('jetid.test with mono IDs', () => {
   it('accepts a well-formed id, in either case', () => {
     const dummyRes = jetid.test(VALID_DUMMY_ID);
@@ -159,7 +159,7 @@ describe('jetid.test with mono IDs', () => {
   });
 });
 
-// ---- `jetid.mono.parse`
+// --- `jetid.mono.parse` ---
 describe('jetid.mono.parse', () => {
   beforeEach(resetGeneratorState);
 

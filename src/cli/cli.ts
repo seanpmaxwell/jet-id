@@ -35,14 +35,14 @@ async function cli(
   args: string[],
   output: Writable = process.stdout,
 ): Promise<unknown> {
-  // ---- Parse the command-line arguments
+  // --- Parse the command-line arguments ---
   const pArgs = cmdLineParser(args);
 
-  // ---- `help/version`
+  // --- `help/version` ---
   if (pArgs.help) return printHelpText(output);
   if (pArgs.version) return output.write(`${version}\n`);
 
-  // ---- Print the IDs
+  // --- Print the IDs ---
   return printIds(pArgs, output);
 }
 

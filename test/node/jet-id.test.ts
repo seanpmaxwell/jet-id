@@ -15,7 +15,7 @@ import { swap } from '@test/_common/utils';
 //                                   TESTS                                   //
 // ========================================================================= //
 
-// ---- `default jetid`
+// --- `default jetid` ---
 describe('jetid()', () => {
   it('returns a string of 28 characters', () => {
     const id = jetid();
@@ -45,7 +45,7 @@ describe('jetid()', () => {
   });
 });
 
-// ---- `.test`
+// --- `.test` ---
 describe('jetid.test', () => {
   it('accepts valid ids', () => {
     const dummyRes = jetid.test(VALID_DUMMY_ID);
@@ -119,7 +119,7 @@ describe('jetid.test', () => {
   // });
 });
 
-// ---- `.timed`
+// --- `.timed` ---
 describe('jetid.timed', () => {
   it('uses defaults for omitted, empty, and undefined options', () => {
     const clock = vi.spyOn(Date, 'now').mockReturnValue(123456789);
@@ -207,7 +207,7 @@ describe('jetid.timed', () => {
   });
 });
 
-// ---- `.timed.parse`
+// --- `.timed.parse` ---
 describe('jetid.timed.parse', () => {
   it('round-trips a timestamp', () => {
     for (const epoch of [0, 1, 1_433_314_800_000, TIMESTAMP_LIMIT - 1]) {

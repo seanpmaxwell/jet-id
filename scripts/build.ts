@@ -13,11 +13,11 @@ await onInit(async () => {
   // --- Delete and recreate the folder to keep things clean
   await fs.rm('./lib', { recursive: true, force: true });
 
-  // ---- Typecheck
+  // --- Typecheck ---
   // A type error rejects, so `onInit` exits non-zero before anything is built.
   await shell('tsc', ['-p', 'tsconfig.build.json', '--noEmit']);
 
-  // ---- Bundle types
+  // --- Bundle types ---
   await shell('dts-bundle-generator', [
     '--project',
     'tsconfig.build.json',
@@ -26,7 +26,7 @@ await onInit(async () => {
     'src/index.ts',
   ]);
 
-  // ---- Build and bundle runtime code
+  // --- Build and bundle runtime code ---
   await esbuild({
     entryPoints: {
       index: 'src/index.ts',
@@ -40,7 +40,7 @@ await onInit(async () => {
     platform: 'node',
   });
 
-  // ---- Finish
+  // --- Finish ---
   logger.info('Finished building. Output written to "lib/"');
 }, 'build');
 

@@ -9,14 +9,14 @@ export const DASH_CODE = 45; // '-'
 //                                   EXEC                                    //
 // ========================================================================= //
 
-// ---- Codes
+// --- Codes ---
 // The character code of each alphabet index, for single-character writes.
 const codes = new Uint8Array(32);
 for (let i = 0; i < codes.length; i++) {
   codes[i] = ALPHABET.charCodeAt(i);
 }
 
-// ---- Double Codes
+// --- Double Codes ---
 // Two character codes packed little-endian into 16 bits, indexed by a
 // 10-bit value, so a pool writer can emit two characters per lookup.
 const doubleCodes = new Uint16Array(1024);
@@ -25,7 +25,7 @@ for (let i = 0; i < doubleCodes.length; i++) {
     ALPHABET.charCodeAt(i >>> 5) | (ALPHABET.charCodeAt(i & 31) << 8);
 }
 
-// ---- Pairs
+// --- Pairs ---
 // The same 10-bit split as DOUBLE_CODES, but as ready-made two-character
 // strings. For the parts of an ID that are built by concatenation rather
 // than written into a pool, one lookup here replaces two.
@@ -34,7 +34,7 @@ for (let i = 0; i < pairs.length; i++) {
   pairs[i] = ALPHABET[i >>> 5] + ALPHABET[i & 31];
 }
 
-// ---- Allowed characters and their values
+// --- Allowed characters and their values ---
 // CHAR_CLASS marks alphabet characters as 1 and the dash as 2.
 // Anything left at 0 isn't allowed. Uppercase and lowercase both accepted.
 //

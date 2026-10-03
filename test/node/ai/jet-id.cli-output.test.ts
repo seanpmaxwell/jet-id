@@ -78,7 +78,7 @@ async function runProcess(
   return { code, stdout, stderr };
 }
 
-// ---- Bundled CLI
+// --- Bundled CLI ---
 // Built once for the tests that need a real process.
 let directory: string;
 let entry: string;
